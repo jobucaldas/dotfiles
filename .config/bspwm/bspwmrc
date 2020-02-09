@@ -1,0 +1,50 @@
+#! /bin/sh
+
+#### Config Multi Monitor ####
+# xrandr --output DP-1 --mode 1280x720 --pos 0x300 --rotate normal --output DP-2 --off --output DP-3 --off --output HDMI-1 --primary --mode 1920x1080 --pos 1280x0 --rotate normal --output DVI-D-1 --off &
+# xsetwacom --set "Wacom Intuos S 2 Pen stylus" MapToOutput DP-1 & 
+
+#### Execute on Load ####
+sxhkd &
+feh --bg-scale $HOME/.config/bspwm/wallpaper.png & 
+picom &
+$HOME/.config/polybar/launch.sh & # Launch as many polybars as there are monitors
+$HOME/.config/scripts/launchRules.sh & # Custom rules script
+unclutter & # Makes cursor not appear when not using the mouse
+
+## Desktop Configurations ##
+###### Multi Monitor #######
+# bspc monitor DP-1 -d TERM WEB CODE DEV MEDIA GAME BG
+# bspc monitor HDMI-1 -d TERM WEB CODE DEV MEDIA GAME BG
+
+##### Single Monitor #######
+bspc monitor -d TERM WEB CODE DEV MEDIA GAME BG
+
+#### BSPWM Config ####
+
+bspc config border_width         0
+bspc config window_gap           0
+bspc config split_ratio          0.52
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+#### Program Rules ####
+
+bspc rule -a Unity desktop='^4'
+bspc rule -a Gimp desktop='^4'
+bspc rule -a kitty desktop='^1'
+bspc rule -a firefox desktop='^2'
+bspc rule -a KeePassXC desktop='^6'
+bspc rule -a p3x-onenote desktop='^5'
+bspc rule -a discord desktop='^5'
+bspc rule -a tweetdeck desktop='^5'
+bspc rule -a Steam desktop='^6'
+bspc rule -a VSCodium desktop='^3'
+bspc rule -a UnityHub desktop='^4'
+bspc rule -a whatsapp-nativefier-d52542 desktop='^5'
+bspc rule -a origin.exe state=floating desktop='^6'
+
+# bspc rule -a mplayer2 state=floating
+# bspc rule -a Kupfer.py focus=on
+# bspc rule -a Screenkey manage=off
+# bspc rule -a Spotify desktop='^5'
