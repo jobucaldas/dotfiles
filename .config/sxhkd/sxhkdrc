@@ -12,9 +12,9 @@ XF86AudioLowerVolume
 super + shift + {+, -}
 	bscp config window-gap 1{+, -}
 
-# print
+
 Print
-	scrot 'mv $f ~/Pictures/Screenshots/ 2>/dev/null'
+    scrot -e 'mv $f ~/Pictures/Screenshots/'
 
 # terminal emulator
 super + Return
