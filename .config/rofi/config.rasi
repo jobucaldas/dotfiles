@@ -1,0 +1,66 @@
+configuration {
+    show-icons:                     false;
+    font:                           "SF Pro Display 14";
+}
+
+* {
+    background-color:               transparent;
+    background:                     #1F2430;
+    background-alt:                 #E5E9F047;
+    text-color:                     #D8DEE9;
+    selected-text-color:            #000000;
+    primary:                        #A3BE8C;
+    urgent:                         #BF616A;
+}
+
+window {
+    transparency:                   "real";
+    background-color:               @background;
+    padding:			    5%;
+}
+
+prompt {
+    enabled:                        true;
+}
+
+entry  {
+    border-radius:                  12;
+    padding:                        1%;
+    background-color:               #ffffff20;
+    border-color:                   @text-color;
+    font:                           "SF Display 15";
+}
+
+listview {
+    columns: 1;
+    layout: vertical;
+    spacing: 3;
+    margin: 1% 1%;
+}
+
+
+element selected {
+    background-color:               @background-alt;
+    color:                          @selected-text-color;
+}
+
+element selected.urgent {
+    background-color:               @urgent;
+}
+
+element selected.active {
+    background-color:               @background-alt;
+    color:                          @selected-text-color;
+}
+
+element-icon {
+    size: 6%;
+}
+
+element-text {
+    padding: 10 0 0 0;
+    text-color: inherit;
+    horizontal-align: 0.5;
+}
+
+/* vim: ft=css
