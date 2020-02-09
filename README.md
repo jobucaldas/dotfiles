@@ -9,6 +9,13 @@ cp dotfiles/ $HOME
 ```
 Also edit the '.zshrc' $HOME variables to your actual '/home/user'.
 
+
+Some things are configured with custom fonts, so it's probably best if you install the following fonts
+- Fira Code
+- Awesome Font
+- Ricty Diminished
+- SF Pro
+
 **Important**
 
 Uses the following as base parameters (I recommend reading their README)
