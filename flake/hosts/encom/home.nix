@@ -557,6 +557,7 @@
       nix-update = "sudo nixos-rebuild switch --flake \${HOME}/Projects/dotfiles/flake#$(hostname)";
       nix-rollback = "sudo nixos-rebuild switch --rollback";
       nix-clean = "nix store gc";
+      spcli = "spotify_player";
     };
 
     oh-my-zsh = {
