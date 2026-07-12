@@ -109,7 +109,8 @@
       settings = {
         global = {
           autoplay = false;
-          device_name = "encom_spotifyd";
+          device_name = "encom spotifyd";
+          zeroconf_port = 57621;
         };
       };
     };
@@ -214,9 +215,9 @@
       progress_bar_type = "Rectangle";
       progress_bar_position = "Bottom";
       genre_num = 2;
-      cover_img_pixels = 64;
+      cover_img_pixels = 32;
       cover_img_length = 9;
-      cover_img_width = 4;
+      cover_img_width = 6;
       cover_img_scale = 1.0;
       enable_media_control = true;
       enable_streaming = "Always";
