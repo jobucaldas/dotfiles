@@ -57,7 +57,7 @@
             nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
 
             {
-              nixpkgs.overlays = [ llm-agents.overlays.default ];
+              nixpkgs.overlays = [ llm-agents.overlays.shared-nixpkgs ];
             }
 
             # Import the Home Manager module
