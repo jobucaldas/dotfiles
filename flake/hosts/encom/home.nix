@@ -217,7 +217,7 @@
       genre_num = 2;
       cover_img_pixels = 32;
       cover_img_length = 9;
-      cover_img_width = 6;
+      cover_img_width = 5;
       cover_img_scale = 1.0;
       enable_media_control = true;
       enable_streaming = "Always";
@@ -338,6 +338,8 @@
       lua-language-server
       stylua
       shfmt
+      awscli
+      opentofu
 
       # Nix support
       nil
