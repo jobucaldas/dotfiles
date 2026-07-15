@@ -33,10 +33,10 @@
 
   boot.plymouth = {
     enable = true;
-    # theme = "matrix";
-    # themePackages = with pkgs; [
-    #   plymouth-matrix-theme
-    # ];
+    theme = "bgrt";
+    themePackages = with pkgs; [
+      nixos-bgrt-plymouth
+    ];
   };
 
   # Enable OpenGL/Vulkan
@@ -300,6 +300,14 @@
     gamescopeSession.enable = true;
 
     protontricks.enable = true;
+  };
+
+  jovian = {
+    decky-loader = {
+      enable = true;
+      user = "jobu";
+      stateDir = "/home/${config.home.user}/.config/decky-loader";
+    };
   };
 
   # Optimize system performance for gaming on demand

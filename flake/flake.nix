@@ -56,6 +56,8 @@
             # add your model from this list: https://github.com/NixOS/nixos-hardware/blob/master/flake.nix
             nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
 
+            jovian-nixos.nixosModules.default
+
             {
               nixpkgs.overlays = [ llm-agents.overlays.shared-nixpkgs ];
             }
