@@ -243,7 +243,7 @@
     decky-loader = {
       enable = true;
       user = "jobu";
-      stateDir = "/home/${config.home.user}/.config/decky-loader";
+      stateDir = "/home/jobu/.config/decky-loader";
 
       package =
         (pkgs.decky-loader.override {
