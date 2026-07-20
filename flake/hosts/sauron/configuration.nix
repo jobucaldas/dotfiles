@@ -197,9 +197,9 @@
 
     shellAliases = {
       ll = "ls -l";
-      nix-refresh = "nix flake update --flake \${HOME}/.config/flake";
-      nix-test = "sudo nixos-rebuild test --flake \${HOME}/.config/flake#$(hostname)";
-      nix-update = "sudo nixos-rebuild switch --flake \${HOME}/.config/flake#$(hostname)";
+      nix-refresh = "nix flake update --flake \${HOME}/Projects/dotfiles/flake";
+      nix-test = "sudo nixos-rebuild test --flake \${HOME}/Projects/dotfiles/flake#$(hostname)";
+      nix-update = "sudo nixos-rebuild switch --flake \${HOME}/Projects/dotfiles/flake#$(hostname)";
       nix-rollback = "sudo nixos-rebuild switch --rollback";
       nix-clean = "nix store gc";
     };
