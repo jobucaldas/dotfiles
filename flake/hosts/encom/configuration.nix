@@ -404,6 +404,20 @@
     STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
   };
 
+  services.envfs = {
+    enable = true;
+
+    extraFallbackPathCommands = ''
+      ln -s ${pkgs.systemd}/bin/systemctl $out/systemctl
+      ln -s ${pkgs.python3}/bin/python3 $out/python3
+    '';
+  };
+
+  systemd.services.decky-loader.path = with pkgs; [
+    systemd
+    python3
+  ];
+
   environment.shellAliases = {
     vi = "nvim";
     vim = "nvim";
