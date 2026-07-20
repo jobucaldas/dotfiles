@@ -244,6 +244,23 @@
       enable = true;
       user = "jobu";
       stateDir = "/home/${config.home.user}/.config/decky-loader";
+
+      package =
+        (pkgs.decky-loader.override {
+          pnpm_9 = pkgs.pnpm_10;
+        }).overrideAttrs
+          (old: {
+            pnpmDeps = pkgs.fetchPnpmDeps {
+              fetcherVersion = 3;
+              inherit (old) pname version src;
+              postPatch = ''
+                rm pnpm-workspace.yaml
+              '';
+              pnpm = pkgs.pnpm_10;
+              sourceRoot = "${old.src.name}/frontend";
+              hash = "sha256-X1L8JYG5hgYMmfg0aa8XhkRU6/oFrYTPiXDIyq77puE=";
+            };
+          });
     };
 
     hardware = {
