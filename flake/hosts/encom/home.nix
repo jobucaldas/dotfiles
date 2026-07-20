@@ -144,7 +144,6 @@
         "npm:context-mode"
         "npm:pi-caveman"
         "npm:pi-rtk-optimizer"
-        "npm:@milespossing/pi-copilot-discovery"
         "npm:visual-explainer"
         # "npm:pi-cursor-sdk"
         "npm:pi-supergsd"
