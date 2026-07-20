@@ -65,16 +65,18 @@
             # Import the Home Manager module
             home-manager.nixosModules.home-manager
             {
-              home-manager.useGlobalPkgs = true;
-              home-manager.useUserPackages = true;
-              home-manager.backupFileExtension = "backup";
+              home-manager = {
+                useGlobalPkgs = true;
+                useUserPackages = true;
+                backupFileExtension = "backup";
 
-              home-manager.extraSpecialArgs = {
-                inherit inputs;
+                extraSpecialArgs = {
+                  inherit inputs;
+                };
+
+                # Define the user config
+                users.jobu = import ./hosts/encom/home.nix;
               };
-
-              # Define the user config
-              home-manager.users.jobu = import ./hosts/encom/home.nix;
             }
           ];
         };
