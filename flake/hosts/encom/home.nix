@@ -600,6 +600,10 @@
     };
   };
 
+  programs.anki = {
+    enable = true;
+  };
+
   # State Version (Do not change)
   home.stateVersion = "26.05";
 }
