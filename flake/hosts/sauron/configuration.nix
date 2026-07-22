@@ -278,6 +278,11 @@
     autoStart = true;
     capSysAdmin = true;
     openFirewall = true;
+
+    settings = {
+      encoder = "vaapi";
+      adapter_name = "/dev/dri/renderD128";
+    };
   };
 
   # List packages installed in system profile. To search, run:
