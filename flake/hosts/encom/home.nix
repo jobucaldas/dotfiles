@@ -123,6 +123,13 @@
   };
 
   # Program configuration (The "Manager" Part)
+
+  programs.github-copilot-cli = {
+    enable = true;
+
+    package = pkgs.llm-agents.copilot-cli;
+  };
+
   programs.pi-coding-agent = {
     enable = true;
 
@@ -147,7 +154,7 @@
         "npm:visual-explainer"
         # "npm:pi-cursor-sdk"
         "npm:pi-supergsd"
-        "npm:@narumitw/pi-codex-usage"
+        "npm:@narumitw/pi-usage"
       ];
       retry = {
         enabled = true;
@@ -601,6 +608,10 @@
   };
 
   programs.anki = {
+    enable = true;
+  };
+
+  programs.kodi = {
     enable = true;
   };
 

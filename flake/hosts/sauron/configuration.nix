@@ -282,6 +282,7 @@
     settings = {
       encoder = "vaapi";
       adapter_name = "/dev/dri/renderD128";
+      csrf_allowed_origins = "https://192.168.15.122:47990,https://192.168.15.122";
     };
   };
 

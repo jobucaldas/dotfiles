@@ -6,11 +6,15 @@
   config,
   pkgs,
   inputs,
+  lib,
   ...
 }:
 
 {
-  imports = [ ./hardware-configuration.nix ];
+  imports = [
+    ./hardware-configuration.nixos
+    inputs.mangowm.nixosModules.mango
+  ];
 
   #  stylix = {
   #    enable = true;
@@ -155,19 +159,28 @@
 
   services.upower.enable = true;
 
-  programs.niri.enable = true;
+  programs.mango.enable = true;
 
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd ${config.programs.niri.package}/bin/niri-session";
-        user = "greeter";
-      };
+  #  services.greetd = {
+  #    enable = true;
+  #    settings = {
+  #      default_session = {
+  #        command = "${pkgs.tuigreet}/bin/tuigreet --time --remember --asterisks --cmd ${config.programs.niri.package}/bin/niri-session";
+  #        user = "greeter";
+  #      };
+  #    };
+  #  };
+
+  services.displayManager = {
+    sddm.enable = true;
+    defaultSession = "mango"; # derived from mango.desktop filename
+    autoLogin = {
+      enable = true;
+      user = "jobu";
     };
   };
 
-  systemd.user.services.niri.enableDefaultPath = false;
+  #systemd.user.services.niri.enableDefaultPath = false;
 
   security.polkit.enable = true;
   services.gnome.gnome-keyring.enable = true;
@@ -303,34 +316,40 @@
   };
 
   jovian = {
+    steam = {
+      enable = true;
+      user = "jobu";
+      autoStart = true;
+      desktopSession = "mango";
+    };
+
     decky-loader = {
       enable = true;
       user = "jobu";
       stateDir = "/home/jobu/.config/decky-loader";
 
-      package = (pkgs.decky-loader.override {
-        pnpm_9 = pkgs.pnpm_10;
-      }).overrideAttrs (old: {
-        pnpmDeps = pkgs.fetchPnpmDeps {
-          fetcherVersion = 3;
-          inherit (old) pname version src;
-          postPatch = ''
-            rm pnpm-workspace.yaml
-          '';
-          pnpm = pkgs.pnpm_10;
-          sourceRoot = "${old.src.name}/frontend";
-          hash = "sha256-X1L8JYG5hgYMmfg0aa8XhkRU6/oFrYTPiXDIyq77puE=";
-        };
-      });
+      package =
+        (pkgs.decky-loader.override {
+          pnpm_9 = pkgs.pnpm_10;
+        }).overrideAttrs
+          (old: {
+            pnpmDeps = pkgs.fetchPnpmDeps {
+              fetcherVersion = 3;
+              inherit (old) pname version src;
+              postPatch = ''
+                rm pnpm-workspace.yaml
+              '';
+              pnpm = pkgs.pnpm_10;
+              sourceRoot = "${old.src.name}/frontend";
+              hash = "sha256-X1L8JYG5hgYMmfg0aa8XhkRU6/oFrYTPiXDIyq77puE=";
+            };
+          });
     };
   };
 
   # Optimize system performance for gaming on demand
   programs.gamemode.enable = true;
   programs.gamescope.enable = true;
-
-  # Install firefox.
-  # programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -340,9 +359,9 @@
     "flakes"
   ];
 
-  xdg.portal.config.niri = {
-    "org.freedesktop.impl.portal.FileChooser" = [ "kde" ]; # or "kde"
-  };
+  # xdg.portal.config.niri = {
+  #   "org.freedesktop.impl.portal.FileChooser" = [ "kde" ]; # or "kde"
+  # };
 
   programs.neovim = {
     enable = true;
@@ -413,6 +432,10 @@
     '';
   };
 
+  services.flatpak = {
+    enable = true;
+  };
+
   systemd.services.decky-loader.path = with pkgs; [
     systemd
     python3
@@ -456,7 +479,7 @@
     enable = true;
 
     settings = {
-      PasswordAuthentication = false;
+      PasswordAuthentication = true;
       KbdInteractiveAuthentication = false;
       PermitRootLogin = "no";
     };
