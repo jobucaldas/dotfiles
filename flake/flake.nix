@@ -4,12 +4,12 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-    # Add Home Manager input
-    home-manager.url = "github:nix-community/home-manager";
+    nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
-    # Critical: Force HM to use the same nixpkgs version as the system
-    # to avoid downloading duplicate packages.
-    home-manager.inputs.nixpkgs.follows = "nixpkgs";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     nixos-hardware = {
       url = "github:NixOS/nixos-hardware";
@@ -18,10 +18,7 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
-    helium = {
-      url = "github:AlvaroParker/helium-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    helium.url = "github:AlvaroParker/helium-nix";
 
     jovian-nixos = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
@@ -32,7 +29,6 @@
       url = "github:mangowm/mango";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
   };
 
   outputs =
@@ -44,11 +40,14 @@
       helium,
       llm-agents,
       jovian-nixos,
+      nix-flatpak,
+      mangowm,
       ...
     }@inputs:
     {
 
       nixosConfigurations = {
+        # Workstation setup
         encom = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
 
@@ -58,11 +57,6 @@
 
           modules = [
             ./hosts/encom/configuration.nix
-
-            # add your model from this list: https://github.com/NixOS/nixos-hardware/blob/master/flake.nix
-            nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
-
-            jovian-nixos.nixosModules.default
 
             {
               nixpkgs.overlays = [ llm-agents.overlays.shared-nixpkgs ];
@@ -87,6 +81,7 @@
           ];
         };
 
+        # Steam-machine like system
         sauron = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
 
@@ -96,22 +91,6 @@
 
           modules = [
             ./hosts/sauron/configuration.nix
-            jovian-nixos.nixosModules.default
-
-            # Import the Home Manager module
-            # home-manager.nixosModules.home-manager
-            # {
-            #   home-manager.useGlobalPkgs = true;
-            #   home-manager.useUserPackages = true;
-            #   home-manager.backupFileExtension = "backup";
-
-            #   home-manager.extraSpecialArgs = {
-            #     inherit inputs;
-            #   };
-
-            #   # Define the user config
-            #   home-manager.users.jobu = import ./hosts/sauron/home.nix;
-            # }
           ];
         };
       };

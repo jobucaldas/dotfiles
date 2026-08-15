@@ -9,36 +9,27 @@
   ...
 }:
 
-{
+{  
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ../../modules/general.nix
+    ../../modules/apps/gaming.nix
   ];
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  features = {
+    desktop = "gnome";
+    gamescopeSession.enable = true;
+  };
 
-  boot.plymouth = {
-    enable = true;
-    theme = "bgrt";
-    themePackages = with pkgs; [
-      nixos-bgrt-plymouth
-    ];
+  # Bootloader.
+  boot = {
+    loader = {
+      systemd-boot.enable = true;
+      efi.canTouchEfiVariables = true;
+    };
   };
 
   networking.hostName = "sauron"; # Define your hostname.
-  networking.wireless.enable = true; # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
-
-  # Set your time zone.
-  time.timeZone = "America/Sao_Paulo";
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
@@ -74,15 +65,7 @@
     xone.enable = true;
   };
 
-  powerManagement = {
-    enable = true;
-    powertop.enable = true;
-  };
-  services.upower.enable = true;
-
   services.xserver.videoDrivers = [ "amdgpu" ];
-
-  systemd.oomd.enable = true;
 
   swapDevices = [
     {
@@ -111,11 +94,6 @@
     desktopManager.xterm.enable = false;
     excludePackages = [ pkgs.xterm ];
   };
-
-  # Enable the GNOME Desktop Environment.
-  # Jovian autoStart enables SDDM; GDM conflicts with it.
-  services.displayManager.gdm.enable = false;
-  services.desktopManager.gnome.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -161,13 +139,8 @@
       "wheel"
       "audio"
     ];
-    packages = with pkgs; [
-      #  thunderbird
-    ];
+    packages = with pkgs; [ ];
   };
-
-  # Install firefox.
-  # programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -176,11 +149,6 @@
     "nix-command"
     "flakes"
   ];
-
-  programs.appimage = {
-    enable = true;
-    binfmt = true;
-  };
 
   programs.neovim = {
     enable = true;
@@ -237,30 +205,12 @@
       autoStart = true;
       desktopSession = "gnome";
       user = "jobu";
-      updater.splash = "steamos";
     };
 
     decky-loader = {
       enable = true;
       user = "jobu";
       stateDir = "/home/jobu/.config/decky-loader";
-
-      package =
-        (pkgs.decky-loader.override {
-          pnpm_9 = pkgs.pnpm_10;
-        }).overrideAttrs
-          (old: {
-            pnpmDeps = pkgs.fetchPnpmDeps {
-              fetcherVersion = 3;
-              inherit (old) pname version src;
-              postPatch = ''
-                rm pnpm-workspace.yaml
-              '';
-              pnpm = pkgs.pnpm_10;
-              sourceRoot = "${old.src.name}/frontend";
-              hash = "sha256-X1L8JYG5hgYMmfg0aa8XhkRU6/oFrYTPiXDIyq77puE=";
-            };
-          });
     };
 
     hardware = {
@@ -317,51 +267,6 @@
     })
     inputs.helium.packages.${stdenv.hostPlatform.system}.default
   ];
-
-  environment.sessionVariables = {
-    STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
-  };
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-  # List services that you want to enable:
-
-  services.envfs = {
-    enable = true;
-
-    extraFallbackPathCommands = ''
-      ln -s ${pkgs.systemd}/bin/systemctl $out/systemctl
-      ln -s ${pkgs.python3}/bin/python3 $out/python3
-    '';
-  };
-
-  systemd.services.decky-loader.path = with pkgs; [
-    systemd
-    python3
-  ];
-
-  # Enable the OpenSSH daemon.
-  services.openssh = {
-    enable = true;
-
-    settings = {
-      PasswordAuthentication = false;
-      KbdInteractiveAuthentication = false;
-      PermitRootLogin = "no";
-    };
-  };
-
-  # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
-  # Or disable the firewall altogether.
-  # networking.firewall.enable = false;
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
