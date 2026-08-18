@@ -23,10 +23,13 @@
     bws
     awscli
     kubectl
-    python3
     ansible
     opentofu
     podman-compose
+    
+    ## Languages
+    python3
+    nodejs
   ];
 
   # Setup applications
