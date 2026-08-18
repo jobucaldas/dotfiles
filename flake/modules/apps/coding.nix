@@ -17,6 +17,18 @@
     defaultNetwork.settings.dns_enabled = true;
   };
 
+  environment.systemPackages = with pkgs; [
+    ## CLI
+    git
+    bws
+    awscli
+    kubectl
+    python3
+    ansible
+    opentofu
+    podman-compose
+  ];
+
   # Setup applications
   programs = {
     neovim = {
