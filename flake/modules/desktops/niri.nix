@@ -11,6 +11,8 @@
     ./wm.nix
   ];
 
+  programs.niri.enable = true;
+
   nixpkgs = {
     # Fix for xwayland-satellite
     overlays = [

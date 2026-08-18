@@ -7,24 +7,35 @@
 }:
 
 {
-  programs = {
-    dms-shell = {
-      enable = true;
+  imports = [
+    inputs.noctalia.nixosModules.default
+  ];
 
-      systemd = {
-        enable = true;           # Systemd service for auto-start
-        restartIfChanged = true; # Auto-restart dms.service when dms-shell changes
-      };
+  programs.noctalia = {
+    enable = true;
 
-      # Core features
-      enableSystemMonitoring = true; # System monitoring widgets (dgop)
-      enableVPN = true;              # VPN management widget
-      enableDynamicTheming = true;   # Wallpaper-based theming (matugen)
-      enableAudioWavelength = true;  # Audio visualizer (cava)
-      enableCalendarEvents = true;   # Calendar integration (khal)
-      enableClipboardPaste = true;   # Pasting from the clipboard history (wtype)
-    };
+    # Enables NetworkManager, Bluetooth, UPower, and a power profile service.
+    recommendedServices.enable = true;
   };
+
+  # programs = {
+  #   dms-shell = {
+  #     enable = true;
+
+  #     systemd = {
+  #       enable = true;           # Systemd service for auto-start
+  #       restartIfChanged = true; # Auto-restart dms.service when dms-shell changes
+  #     };
+
+  #     # Core features
+  #     enableSystemMonitoring = true; # System monitoring widgets (dgop)
+  #     enableVPN = true;              # VPN management widget
+  #     enableDynamicTheming = true;   # Wallpaper-based theming (matugen)
+  #     enableAudioWavelength = true;  # Audio visualizer (cava)
+  #     enableCalendarEvents = true;   # Calendar integration (khal)
+  #     enableClipboardPaste = true;   # Pasting from the clipboard history (wtype)
+  #   };
+  # };
 
   services = {
     #  greetd = {

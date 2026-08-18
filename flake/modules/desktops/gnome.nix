@@ -11,6 +11,4 @@
   # Jovian autoStart enables SDDM; GDM conflicts with it.
   services.displayManager.gdm.enable = false;
   services.desktopManager.gnome.enable = true;
-
-  
 }

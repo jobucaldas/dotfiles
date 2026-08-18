@@ -13,16 +13,17 @@
 {
   imports = [
     # add your model from this list: https://github.com/NixOS/nixos-hardware/blob/master/flake.nix
-    nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
+    inputs.nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
 
     ./hardware-configuration.nix
     ../../modules/general.nix
     ../../modules/apps/gaming.nix
     ../../modules/apps/coding.nix
+    ../../modules/desktops/mango.nix
   ];
 
   features = {
-    desktop = "mango";
+    defaultDesktop = "mango";
     gamescopeSession.enable = false;
   };
 

@@ -17,7 +17,7 @@
   ];
 
   features = {
-    desktop = "gnome";
+    defaultDesktop = "gnome";
     gamescopeSession.enable = true;
   };
 
