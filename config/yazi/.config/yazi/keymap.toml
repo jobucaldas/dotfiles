@@ -1,0 +1,4 @@
+[[mgr.prepend_keymap]]
+desc = "Refresh current directory"
+on = ["R"]
+run = "refresh"

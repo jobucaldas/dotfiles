@@ -1,0 +1,7 @@
+// DMS Window Rules - Managed by DankMaterialShell
+// Do not edit manually - changes may be overwritten
+
+// @id=wr_1784892642517628337 @name=org.gnome.Nautilus
+window-rule {
+    match app-id="^org.gnome.Nautilus$" is-floating=false
+}

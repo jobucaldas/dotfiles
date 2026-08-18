@@ -16,17 +16,14 @@ in
     username = "jobu";
     homeDirectory = "/home/${config.home.username}";
 
-    # Packages support repository-managed Zsh config.
-    packages = with pkgs; [
-      oh-my-zsh
-      zsh-autosuggestions
-      zsh-syntax-highlighting
-    ];
-
     file = {
       ".zprofile".source = outOfStore "zsh/.zprofile";
       ".zshenv".source = outOfStore "zsh/.zshenv";
       ".zshrc".source = outOfStore "zsh/.zshrc";
+      ".oh-my-zsh/custom" = {
+        source = outOfStore "zsh/.oh-my-zsh/custom";
+        recursive = true;
+      };
     };
 
     pointerCursor = {
@@ -93,10 +90,12 @@ in
         source = outOfStore "tmux/.config/tmux";
         recursive = true;
       };
-      "vesktop" = {
-        source = outOfStore "vesktop/.config/vesktop";
-        recursive = true;
-      };
+
+      # Link only intentional Vesktop config. Runtime data stays in ~/.config/vesktop.
+      "vesktop/settings.json".source = outOfStore "vesktop/.config/vesktop/settings.json";
+      "vesktop/settings/settings.json".source = outOfStore "vesktop/.config/vesktop/settings/settings.json";
+      "vesktop/settings/quickCss.css".source = outOfStore "vesktop/.config/vesktop/settings/quickCss.css";
+      "vesktop/themes/dank-discord.css".source = outOfStore "vesktop/.config/vesktop/themes/dank-discord.css";
       "yazi/keymap.toml".source = outOfStore "yazi/.config/yazi/keymap.toml";
       "yazi/yazi.toml".source = outOfStore "yazi/.config/yazi/yazi.toml";
     };
@@ -208,8 +207,6 @@ in
           ;
       };
     };
-
-    quickshell.enable = true;
 
     neovim = {
       enable = true;

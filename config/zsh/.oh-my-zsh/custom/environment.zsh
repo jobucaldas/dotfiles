@@ -1,0 +1,5 @@
+export XCURSOR_THEME="Remus-White"
+export XCURSOR_SIZE="30"
+export EDITOR="nvim"
+export BROWSER="helium"
+export TERMINAL="kitty"

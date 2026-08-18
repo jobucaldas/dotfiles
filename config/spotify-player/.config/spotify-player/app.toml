@@ -1,0 +1,59 @@
+app_refresh_duration_in_ms = 32
+border_type = "Plain"
+client_port = 8080
+cover_img_length = 9
+cover_img_pixels = 32
+cover_img_scale = 1.0
+cover_img_width = 5
+default_device = "encom spcli"
+enable_audio_visualization = true
+enable_cover_image_cache = true
+enable_media_control = true
+enable_mouse_scroll_volume = true
+enable_notify = true
+enable_streaming = "Always"
+explicit_icon = "(E)"
+genre_num = 2
+liked_icon = "♥"
+login_redirect_uri = "http://127.0.0.1:8989/login"
+notify_streaming_only = false
+notify_timeout_in_secs = 0
+notify_transient = false
+page_size_in_rows = 20
+pause_icon = "▌▌"
+play_icon = "▶"
+playback_format = """
+{status} {track} • {artists} {liked}
+{album} • {genres}
+{metadata}
+"""
+playback_metadata_fields = ["repeat", "shuffle", "volume", "device"]
+playback_refresh_duration_in_ms = 0
+progress_bar_position = "Bottom"
+progress_bar_type = "Rectangle"
+seek_duration_secs = 5
+sort_artist_albums_by_type = false
+theme = "dracula"
+tracks_playback_limit = 50
+volume_scroll_step = 5
+
+[device]
+audio_cache = true
+autoplay = false
+bitrate = 320
+device_type = "speaker"
+name = "encom spcli"
+normalization = false
+volume = 70
+
+[layout]
+playback_window_height = 6
+playback_window_position = "Top"
+
+[layout.library]
+album_percent = 40
+playlist_percent = 40
+
+[notify_format]
+body = "{album}"
+summary = "{track} • {artists}"
