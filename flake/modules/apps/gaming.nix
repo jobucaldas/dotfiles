@@ -20,7 +20,7 @@
         steam = {
           autoStart = true;
           desktopSession = config.features.defaultDesktop;
-          user = "steam";
+          user = "jobu";
         };
       };
     })
