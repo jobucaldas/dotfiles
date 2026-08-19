@@ -63,7 +63,7 @@
         };
       };
 
-      xpadneo.enable = true;
+      xone.enable = true;
     };
 
     powerManagement = {
