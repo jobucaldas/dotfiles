@@ -47,19 +47,6 @@
     LC_TIME = "pt_BR.UTF-8";
   };
 
-  fonts.packages = with pkgs; [
-    noto-fonts
-    noto-fonts-cjk-sans
-    noto-fonts-cjk-serif
-    noto-fonts-color-emoji
-    noto-fonts-monochrome-emoji
-    fira-code
-    fira-code-symbols
-    font-awesome
-    jetbrains-mono
-    monaspace
-  ];
-
   # Configure keymap in X11
   services.xserver.xkb = {
     layout = "br";
@@ -84,13 +71,6 @@
     packages = with pkgs; [ ];
   };
 
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-    viAlias = true;
-    vimAlias = true;
-  };
-
   services.sunshine = {
     enable = true;
     autoStart = true;
@@ -109,30 +89,18 @@
   environment.systemPackages = with pkgs; [
     #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
     kitty.terminfo
-    git
     findutils
     wget
     python3
-    pfetch-rs
     curl
     jq
     zenity
     ffmpeg
     p7zip
     wiremix
-    rsync
-    rclone
     nil
     nixfmt
     sbctl
-    protonplus
-    (heroic.override {
-      extraPkgs =
-        pkgs': with pkgs'; [
-          gamescope
-          gamemode
-        ];
-    })
     inputs.helium.packages.${stdenv.hostPlatform.system}.default
   ];
 
