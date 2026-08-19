@@ -196,6 +196,7 @@
         nerd-fonts.fira-code
 
         ## CLI
+        git
         mpv
         stow
         wiremix
@@ -236,6 +237,39 @@
 
     # Setup applications
     programs = {
+      neovim = {
+        enable = true;
+        defaultEditor = true;
+        viAlias = true;
+        vimAlias = true;
+      };
+
+      zsh.enable = true;
+
+      tmux = {
+        enable = true;
+
+        keyMode = "vi";
+
+        plugins = with pkgs.tmuxPlugins; [
+          cpu
+          resurrect
+          continuum
+          yank
+          battery
+          better-mouse-mode
+          tokyo-night-tmux
+        ];
+
+        extraConfig = "
+          set -g mouse on
+          set -g xterm-keys on
+          set -s extended-keys on
+          set -s extended-keys-format csi-u
+          set -as terminal-features ',xterm*:extkeys,tmux*:extkeys,screen*:extkeys'
+          set -sg escape-time 10
+        ";
+      };
       appimage = {
         enable = true;
         binfmt = true;
