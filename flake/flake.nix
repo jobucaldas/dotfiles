@@ -80,7 +80,7 @@
                 };
 
                 # Define the user config
-                users.jobu = import ./home/jobu/home.nix;
+                users.jobu = import ./home/jobu/home-manager.nix;
               };
             }
           ];
@@ -114,7 +114,7 @@
                 };
 
                 # Define the user config
-                users.jobu = import ./home/jobu/home.nix;
+                users.jobu = import ./home/jobu/home-manager.nix;
               };
             }
           ];
