@@ -105,35 +105,16 @@ in
       settings.default = [ "kitty.desktop" ];
     };
 
-    desktopEntries.feh-fit = {
-      name = "Feh Fit";
-      genericName = "Image Viewer";
-      exec = "${pkgs.feh}/bin/feh --scale-down %F";
-      terminal = false;
-      categories = [
-        "Graphics"
-        "Viewer"
-      ];
-      mimeType = [
-        "image/png"
-        "image/jpeg"
-        "image/gif"
-        "image/webp"
-        "image/bmp"
-        "image/tiff"
-      ];
-    };
-
     mimeApps = {
       enable = true;
 
       defaultApplications = {
-        "image/png" = "feh-fit.desktop";
-        "image/jpeg" = "feh-fit.desktop";
-        "image/gif" = "feh-fit.desktop";
-        "image/webp" = "feh-fit.desktop";
-        "image/bmp" = "feh-fit.desktop";
-        "image/tiff" = "feh-fit.desktop";
+        "image/png" = "swayimg.desktop";
+        "image/jpeg" = "swayimg.desktop";
+        "image/gif" = "swayimg.desktop";
+        "image/webp" = "swayimg.desktop";
+        "image/bmp" = "swayimg.desktop";
+        "image/tiff" = "swayimg.desktop";
       };
     };
   };
@@ -185,8 +166,6 @@ in
       };
     };
 
-    feh.enable = true;
-
     spotify-player.enable = lib.mkForce false;
 
     vesktop.enable = lib.mkForce false;
@@ -210,7 +189,8 @@ in
 
     neovim = {
       enable = true;
-      # Existing init.lua is linked from config/vi below.
+
+      # Existing init.lua is linked from config/vi
       sideloadInitLua = true;
 
       extraPackages = with pkgs; [

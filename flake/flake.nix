@@ -80,7 +80,7 @@
                 };
 
                 # Define the user config
-                users.jobu = import ./hosts/encom/home.nix;
+                users.jobu = import ./home/jobu/home.nix;
               };
             }
           ];
