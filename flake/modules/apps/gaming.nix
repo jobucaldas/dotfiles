@@ -30,6 +30,17 @@
         sessionVariables = {
           STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
         };
+
+        systemPackages = [ pkgs.wl-clipboard ];
+      };
+
+      virtualisation = {
+        waydroid = {
+          enable = true;
+          
+          # Newer kernel versions may need
+          package = pkgs.waydroid-nftables;
+        };
       };
 
       # Setup applications
