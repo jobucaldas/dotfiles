@@ -178,7 +178,6 @@
         kodi
         vesktop
         kitty
-        nautilus
         inputs.helium.packages.${stdenv.hostPlatform.system}.default
 
         ## Desktop

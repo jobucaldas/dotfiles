@@ -37,6 +37,13 @@
   #   };
   # };
 
+  environment = {
+    systemPackages = with pkgs; [
+      # Apps
+      nemo
+    ];
+  };
+
   services = {
     #  greetd = {
     #    enable = true;
