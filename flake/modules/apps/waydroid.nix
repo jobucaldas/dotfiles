@@ -70,7 +70,8 @@ in
       };
 
       # Android's uevent bridge starts after surfaceflinger. Re-announce each
-      # InputPlumber virtual input node whenever a new Android session starts.
+      # InputPlumber virtual input node when Android starts or a controller is
+      # connected later.
       waydroid-controller-monitor = {
         description = "Rescan controllers for Waydroid sessions";
         wantedBy = [ "multi-user.target" ];
@@ -89,18 +90,36 @@ in
         };
         script = ''
           last_pid=""
+          last_events=""
+
           while sleep 1; do
             pid="$(pgrep -x surfaceflinger | head -n 1 || true)"
-            if [ -n "$pid" ] && [ "$pid" != "$last_pid" ]; then
-              sleep 10
-              for event in /sys/devices/virtual/input/input*/event*/uevent; do
-                if [ -e "$event" ]; then
-                  echo add > "$event" || true
+            events=""
+            for event in /sys/devices/virtual/input/input*/event*/uevent; do
+              if [ -e "$event" ]; then
+                events="$events $event"
+              fi
+            done
+
+            if [ -n "$pid" ] && { [ "$pid" != "$last_pid" ] || [ "$events" != "$last_events" ]; }; then
+              if [ "$pid" != "$last_pid" ]; then
+                sleep 10
+              else
+                sleep 1
+              fi
+
+              count=0
+              for event in $events; do
+                if echo add > "$event"; then
+                  count=$((count + 1))
                 fi
               done
+              echo "Rescanned $count virtual input devices for Waydroid"
               last_pid="$pid"
+              last_events="$events"
             elif [ -z "$pid" ]; then
               last_pid=""
+              last_events=""
             fi
           done
         '';
