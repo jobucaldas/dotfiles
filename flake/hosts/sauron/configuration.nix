@@ -14,6 +14,7 @@
     ./hardware-configuration.nix
     ../../modules/general.nix
     ../../modules/apps/gaming.nix
+    ../../modules/apps/waydroid.nix
     ../../modules/desktops/gnome.nix
   ];
 
