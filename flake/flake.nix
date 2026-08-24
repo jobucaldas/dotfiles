@@ -90,7 +90,7 @@
           sshUser = "deploy";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
         };
-        address = "100.84.34.90";
+        address = "192.168.15.121";
       };
       sauron = {
         hostname = "sauron";
@@ -99,7 +99,7 @@
           sshUser = "deploy";
           path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
         };
-        address = "100.65.228.27";
+        address = "192.168.15.122";
       };
     };
   };

@@ -11,6 +11,8 @@
     inputs.nix-flatpak.nixosModules.nix-flatpak
     ./apps/coding.nix
     ./apps/gaming.nix
+
+    ../users/deploy/user.nix
   ];
 
   # Feature flag to choose the default desktop
@@ -35,7 +37,6 @@
     };
 
     nix.settings = {
-      trusted-users = [ "deploy" ];
       experimental-features = [
         "nix-command"
         "flakes"
