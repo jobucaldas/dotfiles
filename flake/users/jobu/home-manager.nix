@@ -38,7 +38,7 @@ in
         ln -s ${
           pkgs.fetchzip {
             name = "Remus-White.zip";
-            url = "http://assets.jobucaldas.com/cursors/Remus-White.zip";
+            url = "https://pub-74b82010d1dc4231af9954113cda4e1c.r2.dev/cursors/Remus-White.zip";
             hash = "sha256-nWFXIOQRSOHR8Suooa4IEbdUTUuHQ4Xd3pH9VDm67fc=";
             extension = "zip";
           }
