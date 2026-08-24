@@ -7,6 +7,7 @@
   users.users."jobu" = {
     isNormalUser = true;
     shell = pkgs.zsh;
+
     extraGroups = [
       "networkmanager"
       "wheel"

@@ -11,10 +11,6 @@ let
   outOfStore = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/${path}";
 in
 {
-  imports = [
-    ../../modules/apps/ai.nix
-  ];
-
   home = {
     # Metadata
     username = "jobu";
@@ -137,55 +133,6 @@ in
 
   # Program configuration (The "Manager" Part)
   programs = {
-    pi-coding-agent = {
-      enable = true;
-
-      package = pkgs.llm-agents.pi;
-
-      extraPackages = [
-        pkgs.bun
-        pkgs.nodejs
-        pkgs.llm-agents.rtk
-      ];
-
-      settings = {
-        packages = [
-          "npm:@termdraw/pi"
-          "npm:pi-mcp-adapter"
-          "npm:pi-web-access"
-          "npm:context-mode"
-          "npm:pi-caveman"
-          "npm:pi-rtk-optimizer"
-          "npm:visual-explainer"
-          "npm:pi-supergsd"
-          "npm:@narumitw/pi-usage"
-          # "npm:pi-cursor-sdk"
-        ];
-        retry = {
-          enabled = true;
-          maxRetries = 10;
-        };
-        theme = "dark";
-      };
-    };
-
-    yazi = {
-      enable = true;
-
-      plugins = {
-        inherit (pkgs.yaziPlugins)
-          diff
-          convert
-          drag
-          ouch
-          rich-preview
-          mediainfo
-          mime-ext
-          git
-          ;
-      };
-    };
-
     neovim = {
       enable = true;
 
