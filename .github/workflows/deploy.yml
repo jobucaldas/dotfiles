@@ -27,7 +27,7 @@ jobs:
 
       - name: Check for Assets Availability
         run: |
-          curl -fsv -A 'curl/8.0' \
+          nix run nixpkgs#curl -- -fsv -A 'curl/8.0' \
             https://assets.jobucaldas.com/cursors/Remus-White.zip \
             -o /dev/null
 
