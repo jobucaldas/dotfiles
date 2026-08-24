@@ -38,8 +38,8 @@ in
         ln -s ${
           pkgs.fetchzip {
             name = "Remus-White.zip";
-            url = "https://drive.jobucaldas.com/s/yJAmpLwixGiwNSk/download";
-            hash = "sha256-hq4adOjB0ViCpzmhm9tn74RX4VbgZVp+YFHz8apIgC8=";
+            url = "https://assets.jobucaldas.com/cursors/Remus-White.zip";
+            hash = "sha256-nWFXIOQRSOHR8Suooa4IEbdUTUuHQ4Xd3pH9VDm67fc=";
             extension = "zip";
           }
         }/Remus-White "$out/share/icons/Remus-White"
