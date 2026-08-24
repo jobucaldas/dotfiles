@@ -15,6 +15,12 @@ repos:
         entry: nixfmt
         language: system
         types: [nix]
+      - id: nixcheck
+        name: nixcheck
+        entry: nix flake check ./flake
+        language: system
+        pass_filenames: false
+        types: [nix]
   - repo: https://github.com/gitleaks/gitleaks
     rev: v8.24.2
     hooks:
