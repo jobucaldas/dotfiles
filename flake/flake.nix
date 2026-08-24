@@ -53,8 +53,15 @@
       llm-agents,
       ...
     }@inputs:
+    let
+      systems = [
+        "x86_64-linux"
+      ];
+
+      forAllSystems = nixpkgs.lib.genAttrs systems;
+    in
     {
-      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
+      formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.nixfmt-tree);
 
       nixosConfigurations = {
         # Laptop setup
