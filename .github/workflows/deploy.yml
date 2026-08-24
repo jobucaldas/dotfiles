@@ -19,7 +19,7 @@ jobs:
 
       - name: Format Nix Flake
         working-directory: ./flake
-        run: nix run nixpkgs#nixfmt
+        run: nix fmt
 
       - name: Validate Nix Flake
         working-directory: ./flake
@@ -50,6 +50,4 @@ jobs:
         run: |
           nix run nixpkgs#deploy-rs -- \
             --flake .#deploy \
-            --host encom \
-            --host sauron \
             --ssh-key ${{ secrets.DEPLOY_SSH_KEY }}
