@@ -11,8 +11,8 @@ let
   outOfStore = path: config.lib.file.mkOutOfStoreSymlink "${dotfilesRoot}/${path}";
 in
 {
-  nixpkgs.overlays = [
-    inputs.llm-agents.overlays.shared-nixpkgs
+  imports = [
+    ../../modules/apps/ai.nix
   ];
 
   home = {
