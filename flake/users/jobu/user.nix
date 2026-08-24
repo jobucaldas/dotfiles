@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ config, pkgs, lib, inputs, ... }:
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -7,7 +7,7 @@
   users.users."jobu" = {
     isNormalUser = true;
     shell = pkgs.zsh;
-    extraGroups = lib.mkMerge [
+    extraGroups = [
       "networkmanager"
       "wheel"
       "audio"
@@ -17,19 +17,16 @@
   };
 
   # Import the Home Manager module
-  home-manager.nixosModules.home-manager
-  {
-    home-manager = {
-      useGlobalPkgs = true;
-      useUserPackages = true;
-      backupFileExtension = "backup";
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    backupFileExtension = "backup";
 
-      extraSpecialArgs = {
-        inherit inputs;
-      };
-
-      # Define the user config
-      users.jobu = import ./home-manager.nix;
+    extraSpecialArgs = {
+      inherit inputs;
     };
-  }
+
+    # Define the user config
+    users.jobu = import ./home-manager.nix;
+  };
 }

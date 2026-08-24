@@ -26,12 +26,7 @@
   };
 
   # Feature flag to enable coding stuff
-  options.features.coding = lib.mkOption {
-    type = lib.types.bool;
-    default = false;
-
-    description = "Enable coding apps and tools";
-  };
+  options.features.coding.enable = lib.mkEnableOption "coding apps and tools";
 
   config = {
     nixpkgs = {
@@ -183,11 +178,14 @@
         pfetch-rs
         imagemagick
         spotify-player
+        findutils
+        python3
 
         ## Apps
         anki
         kodi
         kitty
+        kitty.terminfo
         vesktop
         inputs.helium.packages.${stdenv.hostPlatform.system}.default
 
