@@ -351,7 +351,7 @@
 
       tailscale = {
         enable = true;
-        useRoutingFeatures = "client";
+        useRoutingFeatures = "both";
       };
 
       spotifyd = {
