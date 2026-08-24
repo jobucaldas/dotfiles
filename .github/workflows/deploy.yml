@@ -31,6 +31,9 @@ jobs:
     permissions:
       id-token: write
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        deploy_host: [encom, sauron]
     steps:
       - name: Tailscale OIDC
         uses: tailscale/github-action@v4
@@ -45,9 +48,17 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - name: Deploy Nix Hosts
+      - name: Config SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id
+          chmod 600 ~/.ssh/id
+
+      - name: Deploy Nix Host ${{ matrix.deploy_host }}
+        env:
+          DEPLOY_HOST: ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
           nix run nixpkgs#deploy-rs -- \
-            --flake .#deploy \
-            --ssh-key ${{ secrets.DEPLOY_SSH_KEY }}
+            --ssh-opts "-i ~/.ssh/id" \
+            .#$DEPLOY_HOST
