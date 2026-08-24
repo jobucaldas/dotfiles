@@ -23,6 +23,7 @@
   features = {
     defaultDesktop = "gnome";
     gamescopeSession.enable = true;
+    coding.enable = false;
   };
 
   # Bootloader.
