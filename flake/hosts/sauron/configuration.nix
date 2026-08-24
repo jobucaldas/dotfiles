@@ -16,6 +16,8 @@
     ../../modules/general.nix
     # ../../modules/apps/waydroid.nix
     ../../modules/desktops/gnome.nix
+
+    ../../users/jobu/user.nix
   ];
 
   features = {
