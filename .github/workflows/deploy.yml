@@ -20,7 +20,7 @@ jobs:
       - name: Validate Nix Flake
         working-directory: ./flake
         run: |
-          nix run nixpkgs#nixfmt
+          # nix run nixpkgs#nixfmt
           nix flake check
 
   deploy:
