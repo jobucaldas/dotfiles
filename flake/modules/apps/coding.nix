@@ -32,7 +32,7 @@
 
       ## Apps
       vscode
-      
+
       ## Languages
       gcc
       bun

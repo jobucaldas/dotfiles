@@ -9,7 +9,7 @@
   ...
 }:
 
-{  
+{
   imports = [
     ./hardware-configuration.nix
 

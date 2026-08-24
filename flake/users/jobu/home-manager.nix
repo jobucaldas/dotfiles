@@ -93,9 +93,10 @@ in
 
       # Link only intentional Vesktop config. Runtime data stays in ~/.config/vesktop.
       "vesktop/settings.json".source = outOfStore "vesktop/.config/vesktop/settings.json";
-      "vesktop/settings/settings.json".source = outOfStore "vesktop/.config/vesktop/settings/settings.json";
+      "vesktop/settings/settings.json".source =
+        outOfStore "vesktop/.config/vesktop/settings/settings.json";
       "vesktop/settings/quickCss.css".source = outOfStore "vesktop/.config/vesktop/settings/quickCss.css";
-         
+
       "yazi/keymap.toml".source = outOfStore "yazi/.config/yazi/keymap.toml";
       "yazi/yazi.toml".source = outOfStore "yazi/.config/yazi/yazi.toml";
     };

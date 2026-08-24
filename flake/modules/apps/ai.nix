@@ -1,4 +1,10 @@
-{ config, pkgs, inputs, lib, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  lib,
+  ...
+}:
 lib.mkIf config.features.coding.enable {
   nixpkgs.overlays = [
     inputs.llm-agents.overlays.shared-nixpkgs

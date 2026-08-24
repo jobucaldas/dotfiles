@@ -102,7 +102,7 @@
       firewall = {
         # Open ports in the firewall.
         allowedTCPPorts = [ 57621 ]; # Spotifyd port
-        allowedUDPPorts = [ 5353 ];  # Spotifyd port
+        allowedUDPPorts = [ 5353 ]; # Spotifyd port
 
         # Or disable the firewall altogether.
         # enable = false;
@@ -211,7 +211,6 @@
         ShellRoot {}
       '';
     };
-
 
     # Setup applications
     programs = {

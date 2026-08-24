@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 {
   imports = [
     inputs.home-manager.nixosModules.home-manager
@@ -13,7 +19,8 @@
       "wheel"
       "audio"
       "video"
-    ] ++ lib.optional config.features.coding.enable "podman";
+    ]
+    ++ lib.optional config.features.coding.enable "podman";
     packages = with pkgs; [ ];
   };
 

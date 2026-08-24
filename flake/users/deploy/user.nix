@@ -1,4 +1,10 @@
-{ config, pkgs, lib, inputs, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 {
   users.users."deploy" = {
     isNormalUser = true;
@@ -12,11 +18,15 @@
     ];
   };
 
-  security.sudo.extraRules = [{
-    users = [ "deploy" ];
-    commands = [{
-        command = "ALL";
-        options = [ "NOPASSWD" ];
-    }];
-  }];
+  security.sudo.extraRules = [
+    {
+      users = [ "deploy" ];
+      commands = [
+        {
+          command = "ALL";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 }

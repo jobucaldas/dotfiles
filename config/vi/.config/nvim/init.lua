@@ -83,7 +83,7 @@ require("lazy").setup({
   spec = {
     -- LazyVim base distro
     { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-    
+
     {
       "nvim-mini/mini.nvim",
       version = false,
