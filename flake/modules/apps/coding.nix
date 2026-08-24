@@ -29,6 +29,7 @@
       ansible
       opentofu
       podman-compose
+      pre-commit
 
       ## Apps
       vscode
