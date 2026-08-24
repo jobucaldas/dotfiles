@@ -39,68 +39,70 @@
   };
 
   outputs =
-  {
-    self,
-    nixpkgs,
-    nixos-hardware,
-    deploy-rs,
-    home-manager,
-    nix-flatpak,
-    jovian-nixos,
-    helium,
-    mangowm,
-    noctalia,
-    llm-agents,
-    ...
-  }@inputs:
-  {
-    nixosConfigurations = {
-      # Laptop setup
-      encom = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+    {
+      self,
+      nixpkgs,
+      nixos-hardware,
+      deploy-rs,
+      home-manager,
+      nix-flatpak,
+      jovian-nixos,
+      helium,
+      mangowm,
+      noctalia,
+      llm-agents,
+      ...
+    }@inputs:
+    {
+      formatter.${system} = nixpkgs.legacyPackages.${system}.nixfmt-tree;
 
-        specialArgs = {
-          inherit inputs;
+      nixosConfigurations = {
+        # Laptop setup
+        encom = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+
+          specialArgs = {
+            inherit inputs;
+          };
+
+          modules = [
+            ./hosts/encom/configuration.nix
+          ];
         };
 
-        modules = [
-          ./hosts/encom/configuration.nix
-        ];
+        # Steam-machine like system
+        sauron = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+
+          specialArgs = {
+            inherit inputs;
+          };
+
+          modules = [
+            ./hosts/sauron/configuration.nix
+          ];
+        };
       };
 
-      # Steam-machine like system
-      sauron = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-
-        specialArgs = {
-          inherit inputs;
+      deploy.nodes = {
+        encom = {
+          hostname = "encom";
+          profiles.system = {
+            user = "root";
+            sshUser = "deploy";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
+          };
+          address = "100.84.34.90";
         };
-
-        modules = [
-          ./hosts/sauron/configuration.nix
-        ];
+        sauron = {
+          hostname = "sauron";
+          profiles.system = {
+            user = "root";
+            sshUser = "deploy";
+            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
+          };
+          address = "100.86.114.87";
+        };
       };
     };
-
-    deploy.nodes = {
-      encom = {
-        hostname = "encom";
-        profiles.system = {
-          user = "root";
-          sshUser = "deploy";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
-        };
-        address = "100.84.34.90";
-      };
-      sauron = {
-        hostname = "sauron";
-        profiles.system = {
-          user = "root";
-          sshUser = "deploy";
-          path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
-        };
-        address = "100.86.114.87";
-      };
-    };
-  };
 }
