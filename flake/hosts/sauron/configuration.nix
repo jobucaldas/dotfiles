@@ -12,9 +12,12 @@
 {  
   imports = [
     ./hardware-configuration.nix
+
     ../../modules/general.nix
     ../../modules/apps/waydroid.nix
     ../../modules/desktops/gnome.nix
+
+    ../../users/deploy/user.nix
   ];
 
   features = {
