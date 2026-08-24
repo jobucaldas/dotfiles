@@ -25,6 +25,12 @@ jobs:
         working-directory: ./flake
         run: nix flake check
 
+      - name: Check for Assets Availability
+        run: |
+          curl -fsv -A 'curl/8.0' \
+            https://assets.jobucaldas.com/cursors/Remus-White.zip \
+            -o /dev/null
+
   deploy:
     name: Deploy Nix Hosts
     needs: validate
