@@ -12,6 +12,7 @@ lib.mkIf config.features.coding.enable {
     copilot-cli
 
     # Tools
+    t3code
     rtk
 
     # Interfaces
