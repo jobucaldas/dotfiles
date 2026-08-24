@@ -31,6 +31,7 @@ jobs:
     permissions:
       id-token: write
     runs-on: ubuntu-latest
+    fail-fast: false
     strategy:
       matrix:
         deploy_host: [encom, sauron]
