@@ -1,14 +1,21 @@
-{ pkgs, inputs, ... }:
-{
+{ config, pkgs, inputs, lib, ... }:
+lib.mkIf config.features.coding.enable {
   nixpkgs.overlays = [
     inputs.llm-agents.overlays.shared-nixpkgs
   ];
 
   environment.systemPackages = with pkgs.llm-agents; [
-    pi-coding-agent
-    rtk
+    # Harness
+    pi
+    codex
     opencode
     copilot-cli
+
+    # Tools
+    rtk
+
+    # Interfaces
+    chatgpt
     t3code-desktop
   ];
 }
