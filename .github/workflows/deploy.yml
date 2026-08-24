@@ -20,16 +20,17 @@ jobs:
       - name: Validate Nix Flake
         working-directory: ./flake
         run: |
-          nix run .#nixfmt
+          nix run nixpkgs#nixfmt
           nix flake check
 
   deploy:
     name: Deploy Nix Hosts
+    needs: validate
     permissions:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - name: Tailscale
+      - name: Tailscale OIDC
         uses: tailscale/github-action@v4
         with:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
