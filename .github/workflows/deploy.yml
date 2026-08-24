@@ -1,0 +1,51 @@
+name: Deploy Nix Hosts
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  validate:
+    name: Validate Nix Flake
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Validate Nix Flake
+        working-directory: ./flake
+        run: |
+          nix fmt
+          nix flake check
+
+  deploy:
+    name: Deploy Nix Hosts
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v22
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Deploy Nix Hosts
+        working-directory: ./flake
+        run: |
+          nix run .#deploy-rs -- \
+            --flake .#deploy \
+            --host encom \
+            --host sauron \
+            --ssh-key ${{ secrets.DEPLOY_SSH_KEY }}
