@@ -79,20 +79,6 @@
   # Configure console keymap
   console.keyMap = "br-abnt2";
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."jobu" = {
-    isNormalUser = true;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-      "audio"
-      "video"
-      "podman"
-    ];
-    shell = pkgs.zsh;
-    packages = with pkgs; [ ];
-  };
-
   services.xserver = {
     # Configure keymap in X11
     xkb = {

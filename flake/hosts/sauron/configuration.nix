@@ -13,7 +13,6 @@
   imports = [
     ./hardware-configuration.nix
     ../../modules/general.nix
-    ../../modules/apps/ai.nix
     ../../modules/apps/waydroid.nix
     ../../modules/desktops/gnome.nix
   ];
@@ -60,18 +59,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users."jobu" = {
-    isNormalUser = true;
-    shell = pkgs.zsh;
-    extraGroups = [
-      "networkmanager"
-      "wheel"
-      "audio"
-    ];
-    packages = with pkgs; [ ];
-  };
-
   services.sunshine = {
     enable = true;
     autoStart = true;
@@ -84,26 +71,6 @@
       csrf_allowed_origins = "https://192.168.15.122:47990,https://192.168.15.122";
     };
   };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    #  vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.
-    kitty.terminfo
-    findutils
-    wget
-    python3
-    curl
-    jq
-    zenity
-    ffmpeg
-    p7zip
-    wiremix
-    nil
-    nixfmt
-    sbctl
-    inputs.helium.packages.${stdenv.hostPlatform.system}.default
-  ];
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
