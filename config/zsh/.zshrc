@@ -34,4 +34,6 @@ if [ -r /run/current-system/sw/share/zsh-syntax-highlighting/zsh-syntax-highligh
   ZSH_HIGHLIGHT_HIGHLIGHTERS=(main)
 fi
 
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
+
 pfetch
