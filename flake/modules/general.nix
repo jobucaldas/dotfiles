@@ -9,6 +9,8 @@
 {
   imports = [
     inputs.nix-flatpak.nixosModules.nix-flatpak
+    ./apps/coding.nix
+    ./apps/gaming.nix
   ];
 
   # Feature flag to choose the default desktop
@@ -21,6 +23,14 @@
     default = "mango";
 
     description = "Desktop environment/window manager";
+  };
+
+  # Feature flag to enable coding stuff
+  options.features.coding = lib.mkOption {
+    type = lib.types.bool;
+    default = false;
+
+    description = "Enable coding apps and tools";
   };
 
   config = {
@@ -167,6 +177,7 @@
         wiremix
         jfbview
         swayimg
+        unzip
         rclone
         rsync
         pfetch-rs
@@ -176,8 +187,8 @@
         ## Apps
         anki
         kodi
-        vesktop
         kitty
+        vesktop
         inputs.helium.packages.${stdenv.hostPlatform.system}.default
 
         ## Desktop
@@ -199,8 +210,33 @@
       '';
     };
 
+
     # Setup applications
     programs = {
+      # Workaround to run apps that look for libraries directly
+      nix-ld = {
+        enable = true;
+        libraries = with pkgs; [
+          # Libraries needed for Fields of Mistria mod loader
+          icu
+          libice
+          libsm
+          libx11
+          libxcursor
+          libxext
+          libxfixes
+          libxi
+          libxrandr
+          libxrender
+          libxtst
+          libxkbcommon
+
+          # Font stuff
+          fontconfig
+          freetype
+        ];
+      };
+
       neovim = {
         enable = true;
         defaultEditor = true;

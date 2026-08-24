@@ -9,6 +9,7 @@
 {
   imports = [
     inputs.jovian-nixos.nixosModules.default
+    ../../users/steam/user.nix
   ];
 
   # Feature flag to enable gamescope session
@@ -20,7 +21,7 @@
         steam = {
           autoStart = true;
           desktopSession = config.features.defaultDesktop;
-          user = "jobu";
+          user = "steam";
         };
       };
     })
@@ -28,29 +29,6 @@
     {
       # Setup applications
       programs = {
-        # Workaround to run apps that look for libraries directly (example: Dotnet Mod Loaders)
-        # nix-ld = {
-        #   enable = true;
-        #   libraries = with pkgs; [
-        #     icu
-        #     libice
-        #     libsm
-        #     libx11
-        #
-        #     fontconfig
-        #     freetype
-        #
-        #     libxcursor
-        #     libxext
-        #     libxfixes
-        #     libxi
-        #     libxrandr
-        #     libxrender
-        #     libxtst
-        #     libxkbcommon
-        #   ];
-        # };
-
         # Install steam
         steam = {
           enable = true;
@@ -75,8 +53,8 @@
 
         decky-loader = {
           enable = true;
-          user = "jobu";
-          stateDir = "/home/jobu/.config/decky-loader";
+          user = "steam";
+          stateDir = "/home/steam/.config/decky-loader";
         };
 
         hardware = {

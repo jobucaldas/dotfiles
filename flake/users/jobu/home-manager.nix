@@ -95,7 +95,7 @@ in
       "vesktop/settings.json".source = outOfStore "vesktop/.config/vesktop/settings.json";
       "vesktop/settings/settings.json".source = outOfStore "vesktop/.config/vesktop/settings/settings.json";
       "vesktop/settings/quickCss.css".source = outOfStore "vesktop/.config/vesktop/settings/quickCss.css";
-      "vesktop/themes/dank-discord.css".source = outOfStore "vesktop/.config/vesktop/themes/dank-discord.css";
+         
       "yazi/keymap.toml".source = outOfStore "yazi/.config/yazi/keymap.toml";
       "yazi/yazi.toml".source = outOfStore "yazi/.config/yazi/yazi.toml";
     };
@@ -128,20 +128,14 @@ in
 
   # Program configuration (The "Manager" Part)
   programs = {
-    github-copilot-cli = {
-      enable = true;
-
-      package = pkgs.llm-agents.copilot-cli;
-    };
-
     pi-coding-agent = {
       enable = true;
 
       package = pkgs.llm-agents.pi;
 
       extraPackages = [
-        pkgs.nodejs
         pkgs.bun
+        pkgs.nodejs
         pkgs.llm-agents.rtk
       ];
 
@@ -165,10 +159,6 @@ in
         theme = "dark";
       };
     };
-
-    spotify-player.enable = lib.mkForce false;
-
-    vesktop.enable = lib.mkForce false;
 
     yazi = {
       enable = true;
@@ -217,28 +207,6 @@ in
       plugins = with pkgs.vimPlugins; [
         lazy-nvim
       ];
-    };
-
-    # Zsh config is linked from config/zsh via home.file above.
-
-    # VS Code: Managing extensions and settings
-    vscode = {
-      enable = true;
-      package = pkgs.vscode;
-
-      profiles = {
-        default = {
-          extensions = with pkgs.vscode-extensions; [
-            bbenoist.nix # Nix syntax support
-            dracula-theme.theme-dracula
-          ];
-          userSettings = {
-            #  "editor.fontSize" = 14;
-            #  "workbench.colorTheme" = "Dracula";
-            "nix.enableLanguageServer" = true;
-          };
-        };
-      };
     };
   };
 

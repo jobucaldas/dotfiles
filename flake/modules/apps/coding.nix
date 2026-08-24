@@ -1,12 +1,15 @@
 {
   config,
   pkgs,
-  inputs,
   lib,
   ...
 }:
 
-{
+lib.mkIf config.features.coding.enable {
+  imports = [
+    ./ai.nix
+  ];
+
   virtualisation.podman = {
     enable = true;
 
@@ -25,9 +28,21 @@
     ansible
     opentofu
     podman-compose
+
+    ## Apps
+    vscode
     
     ## Languages
-    python3
+    gcc
+    bun
+    cargo
+    rustup
     nodejs
+    python3
+
+    # Nix
+    nil
+    nixfmt
+    statix
   ];
 }

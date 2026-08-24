@@ -50,9 +50,8 @@
       ...
     }@inputs:
     {
-
       nixosConfigurations = {
-        # Workstation setup
+        # Laptop setup
         encom = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
 
@@ -62,27 +61,6 @@
 
           modules = [
             ./hosts/encom/configuration.nix
-
-            {
-              nixpkgs.overlays = [ llm-agents.overlays.shared-nixpkgs ];
-            }
-
-            # Import the Home Manager module
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-
-                extraSpecialArgs = {
-                  inherit inputs;
-                };
-
-                # Define the user config
-                users.jobu = import ./home/jobu/home-manager.nix;
-              };
-            }
           ];
         };
 
@@ -96,27 +74,6 @@
 
           modules = [
             ./hosts/sauron/configuration.nix
-
-            {
-              nixpkgs.overlays = [ llm-agents.overlays.shared-nixpkgs ];
-            }
-
-            # Import the Home Manager module
-            home-manager.nixosModules.home-manager
-            {
-              home-manager = {
-                useGlobalPkgs = true;
-                useUserPackages = true;
-                backupFileExtension = "backup";
-
-                extraSpecialArgs = {
-                  inherit inputs;
-                };
-
-                # Define the user config
-                users.jobu = import ./home/jobu/home-manager.nix;
-              };
-            }
           ];
         };
       };

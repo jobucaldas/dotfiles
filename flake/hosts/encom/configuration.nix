@@ -14,17 +14,18 @@
   imports = [
     # add your model from this list: https://github.com/NixOS/nixos-hardware/blob/master/flake.nix
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
-
     ./hardware-configuration.nix
+
     ../../modules/general.nix
-    ../../modules/apps/gaming.nix
-    ../../modules/apps/coding.nix
     ../../modules/desktops/mango.nix
+
+    ../../users/jobu/user.nix
   ];
 
   features = {
     defaultDesktop = "mango";
     gamescopeSession.enable = false;
+    coding.enable = true;
   };
 
   networking.hostName = "encom"; # Define your hostname
