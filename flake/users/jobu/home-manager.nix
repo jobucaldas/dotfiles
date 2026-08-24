@@ -109,6 +109,11 @@ in
       enable = true;
 
       defaultApplications = {
+        "text/html" = "helium.desktop";
+        "application/xhtml+xml" = "helium.desktop";
+        "x-scheme-handler/http" = "helium.desktop";
+        "x-scheme-handler/https" = "helium.desktop";
+
         "image/png" = "swayimg.desktop";
         "image/jpeg" = "swayimg.desktop";
         "image/gif" = "swayimg.desktop";
