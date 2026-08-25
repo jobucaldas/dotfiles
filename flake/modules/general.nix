@@ -351,6 +351,9 @@
       tailscale = {
         enable = true;
         useRoutingFeatures = "both";
+        extraSetFlags = [
+          "--ssh"
+        ];
       };
 
       spotifyd = {

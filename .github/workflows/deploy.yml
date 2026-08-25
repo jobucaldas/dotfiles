@@ -54,19 +54,10 @@ jobs:
           name: jobucaldas
           authToken: ${{ secrets.CACHIX_TOKEN }}
 
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id
-          chmod 600 ~/.ssh/id
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
-
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         env:
           DEPLOY_HOST: ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
           nix run nixpkgs#deploy-rs -- \
-            --ssh-opts "-i ~/.ssh/id" \
             .#$DEPLOY_HOST
