@@ -93,22 +93,20 @@
 
       deploy.nodes = {
         encom = {
-          hostname = "encom";
+          hostname = "encom.tailbe71e1.ts.net";
           profiles.system = {
             user = "root";
             sshUser = "deploy";
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
           };
-          address = "100.84.34.90";
         };
         sauron = {
-          hostname = "sauron";
+          hostname = "sauron.tailbe71e1.ts.net";
           profiles.system = {
             user = "root";
             sshUser = "deploy";
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
           };
-          address = "100.86.114.87";
         };
       };
     };
