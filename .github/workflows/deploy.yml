@@ -54,11 +54,13 @@ jobs:
           name: jobucaldas
           authToken: ${{ secrets.CACHIX_TOKEN }}
 
-      - name: Config SSH Key
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/id
           chmod 600 ~/.ssh/id
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         env:
