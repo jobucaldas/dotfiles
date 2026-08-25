@@ -27,4 +27,8 @@
   xdg.portal.config.niri = {
     "org.freedesktop.impl.portal.FileChooser" = [ "kde" ];
   };
+
+  systemd = {
+    user.services.niri.enableDefaultPath = false;
+  };
 }

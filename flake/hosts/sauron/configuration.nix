@@ -24,14 +24,7 @@
     defaultDesktop = "gnome";
     gamescopeSession.enable = true;
     coding.enable = false;
-  };
-
-  # Bootloader.
-  boot = {
-    loader = {
-      systemd-boot.enable = true;
-      efi.canTouchEfiVariables = true;
-    };
+    secureboot.enable = false;
   };
 
   networking.hostName = "sauron"; # Define your hostname.

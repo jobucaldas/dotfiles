@@ -9,26 +9,34 @@
 {
   imports = [
     inputs.nix-flatpak.nixosModules.nix-flatpak
+
+    ./bootloader.nix
+    ../users/deploy/user.nix
+
     ./apps/coding.nix
     ./apps/gaming.nix
-
-    ../users/deploy/user.nix
   ];
 
-  # Feature flag to choose the default desktop
-  options.features.defaultDesktop = lib.mkOption {
-    type = lib.types.enum [
-      "mango"
-      "niri"
-      "gnome"
-    ];
-    default = "mango";
+  # Feature Flags
+  options.features = {
+    # Choose the default desktop
+    defaultDesktop = lib.mkOption {
+      type = lib.types.enum [
+        "mango"
+        "niri"
+        "gnome"
+      ];
+      default = "mango";
 
-    description = "Desktop environment/window manager";
+      description = "Desktop environment/window manager";
+    };
+
+    # Enable coding stuff
+    coding.enable = lib.mkEnableOption "coding apps and tools";
+
+    # Enable secure boot
+    secureboot.enable = lib.mkEnableOption "secure boot";
   };
-
-  # Feature flag to enable coding stuff
-  options.features.coding.enable = lib.mkEnableOption "coding apps and tools";
 
   config = {
     nixpkgs = {
@@ -37,20 +45,14 @@
     };
 
     nix.settings = {
+      trusted-users = [
+        "deploy"
+      ];
+
       experimental-features = [
         "nix-command"
         "flakes"
       ];
-    };
-
-    boot = {
-      plymouth = {
-        enable = true;
-        theme = "bgrt";
-        themePackages = with pkgs; [
-          nixos-bgrt-plymouth
-        ];
-      };
     };
 
     hardware = {
@@ -190,6 +192,8 @@
         kodi
         kitty
         kitty.terminfo
+        filezilla
+        spotify
         vesktop
         inputs.helium.packages.${stdenv.hostPlatform.system}.default
 
@@ -341,10 +345,7 @@
 
         packages = [
           "it.mijorus.gearlever"
-          "com.spotify.Client"
           "rocks.shy.VacuumTube"
-          "net.ankiweb.Anki"
-          "org.filezillaproject.Filezilla"
         ];
       };
 
@@ -375,8 +376,6 @@
     systemd = {
       # Keep NixOS service behavior; use config linked by Home Manager from repo.
       services.spotifyd.serviceConfig.ExecStart = lib.mkForce "${pkgs.spotifyd}/bin/spotifyd --no-daemon --cache-path /var/cache/spotifyd --config-path /home/jobu/.config/spotifyd/spotifyd.conf";
-
-      # user.services.niri.enableDefaultPath = false;
 
       # Needed for swap to be treated correctly
       oomd.enable = true;

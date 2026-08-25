@@ -26,21 +26,10 @@
     defaultDesktop = "mango";
     gamescopeSession.enable = false;
     coding.enable = true;
+    secureboot.enable = true;
   };
 
   networking.hostName = "encom"; # Define your hostname
-
-  boot = {
-    loader = {
-      limine = {
-        # Bootloader
-        enable = true;
-        secureBoot.enable = true;
-      };
-
-      efi.canTouchEfiVariables = true;
-    };
-  };
 
   # Select internationalisation properties.
   i18n = {
