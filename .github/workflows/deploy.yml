@@ -49,6 +49,12 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: jobucaldas
+          authToken: ${{ secrets.CACHIX_TOKEN }}
+
       - name: Config SSH Key
         run: |
           mkdir -p ~/.ssh
