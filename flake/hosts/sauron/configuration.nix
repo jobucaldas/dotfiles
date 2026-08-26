@@ -24,7 +24,7 @@
     defaultDesktop = "gnome";
     gamescopeSession.enable = true;
     coding.enable = false;
-    secureboot.enable = false;
+    secureboot.enable = true;
   };
 
   networking.hostName = "sauron"; # Define your hostname.
