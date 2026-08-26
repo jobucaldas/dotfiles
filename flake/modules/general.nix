@@ -44,15 +44,25 @@
       config.allowUnfree = true;
     };
 
-    nix.settings = {
-      trusted-users = [
-        "deploy"
-      ];
+    nix = {
+      settings = {
+        trusted-users = [
+          "deploy"
+        ];
 
-      experimental-features = [
-        "nix-command"
-        "flakes"
-      ];
+        experimental-features = [
+          "nix-command"
+          "flakes"
+        ];
+
+        auto-optimise-store = true;
+      };
+
+      gc = {
+        automatic = true;
+        dates = "daily";
+        options = "--delete-older-than 10d";
+      };
     };
 
     hardware = {
@@ -381,12 +391,19 @@
       oomd.enable = true;
     };
 
-    # This value determines the NixOS release from which the default
-    # settings for stateful data, like file locations and database versions
-    # on your system were taken. It‘s perfectly fine and recommended to leave
-    # this value at the release version of the first install of this system.
-    # Before changing this value read the documentation for this option
-    # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-    system.stateVersion = "26.05"; # Did you read the comment?
+    system = {
+      autoUpgrade = {
+        enable = true;
+        dates = "weekly";
+      };
+
+      # This value determines the NixOS release from which the default
+      # settings for stateful data, like file locations and database versions
+      # on your system were taken. It‘s perfectly fine and recommended to leave
+      # this value at the release version of the first install of this system.
+      # Before changing this value read the documentation for this option
+      # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+      stateVersion = "26.05"; # Did you read the comment?
+    };
   };
 }
