@@ -77,6 +77,7 @@
         systemPackages = with pkgs; [
           ## Apps
           protonplus
+          moonlight-qt
           (heroic.override {
             extraPkgs =
               pkgs': with pkgs'; [

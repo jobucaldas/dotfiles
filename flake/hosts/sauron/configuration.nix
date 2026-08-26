@@ -65,7 +65,7 @@
     settings = {
       encoder = "vaapi";
       adapter_name = "/dev/dri/renderD128";
-      csrf_allowed_origins = "https://192.168.15.122:47990,https://192.168.15.122";
+      csrf_allowed_origins = "https://sauron.tailbe71e1.ts.net:47990,https://sauron.tailbe71e1.ts.net,https://sauron:47990,https://sauron";
     };
   };
 
