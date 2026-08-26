@@ -21,7 +21,7 @@
         steam = {
           autoStart = true;
           desktopSession = config.features.defaultDesktop;
-          user = "steam";
+          user = "jobu";
         };
       };
     })
@@ -53,8 +53,8 @@
 
         decky-loader = {
           enable = true;
-          user = "steam";
-          stateDir = "/home/steam/.config/decky-loader";
+          user = "jobu";
+          stateDir = "/home/jobu/.config/decky-loader";
         };
 
         hardware = {
