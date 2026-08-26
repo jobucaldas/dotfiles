@@ -54,11 +54,16 @@ jobs:
           name: jobucaldas
           authToken: ${{ secrets.CACHIX_TOKEN }}
 
-      - name: Test Tailscale SSH
+      - name: Configure SSH
         run: |
-          ssh -o StrictHostKeyChecking=accept-new \
-            deploy@${{ matrix.deploy_host }}.tailbe71e1.ts.net \
-            true
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
 
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         working-directory: ./flake
