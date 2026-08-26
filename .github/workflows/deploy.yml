@@ -54,10 +54,19 @@ jobs:
           name: jobucaldas
           authToken: ${{ secrets.CACHIX_TOKEN }}
 
+      - name: Test Tailscale SSH
+        run: |
+          echo "=== Tailscale status ==="
+          tailscale status
+
+          echo "=== Tailscale ping ==="
+          tailscale ping ${{ matrix.deploy_host }}.tailbe71e1.ts.net
+
+          echo "=== SSH ==="
+          ssh -vvv ${{ matrix.deploy_host }}.tailbe71e1.ts.net true
+
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
-        env:
-          DEPLOY_HOST: ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
           nix run nixpkgs#deploy-rs -- \
-            .#$DEPLOY_HOST
+            .#${{ matrix.deploy_host }}
