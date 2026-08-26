@@ -56,14 +56,9 @@ jobs:
 
       - name: Test Tailscale SSH
         run: |
-          echo "=== Tailscale status ==="
-          tailscale status
-
-          echo "=== Tailscale ping ==="
-          tailscale ping ${{ matrix.deploy_host }}.tailbe71e1.ts.net
-
-          echo "=== SSH ==="
-          ssh -vvv ${{ matrix.deploy_host }}.tailbe71e1.ts.net true
+          ssh -o StrictHostKeyChecking=accept-new \
+            deploy@${{ matrix.deploy_host }}.tailbe71e1.ts.net \
+            true
 
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         working-directory: ./flake
