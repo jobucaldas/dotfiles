@@ -161,6 +161,7 @@
 
       systemPackages = with pkgs; [
         ## System Utilities
+        udiskie
         git
         zsh
         oh-my-zsh
@@ -341,6 +342,9 @@
         };
       };
 
+      udisks2.enable = true;
+      gvfs.enable = true;
+
       envfs = {
         enable = true;
 
@@ -384,6 +388,17 @@
     };
 
     systemd = {
+      user.services.udiskie = {
+        description = "udiskie automounter";
+        wantedBy = [ "graphical-session.target" ];
+        after = [ "graphical-session.target" ];
+
+        serviceConfig = {
+          ExecStart = "${pkgs.udiskie}/bin/udiskie --automount";
+          Restart = "on-failure";
+        };
+      };
+
       # Keep NixOS service behavior; use config linked by Home Manager from repo.
       services.spotifyd.serviceConfig.ExecStart = lib.mkForce "${pkgs.spotifyd}/bin/spotifyd --no-daemon --cache-path /var/cache/spotifyd --config-path /home/jobu/.config/spotifyd/spotifyd.conf";
 
