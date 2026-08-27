@@ -74,7 +74,7 @@
       enable = true;
       settings = {
         default_session = {
-          command = "noctalia-greeter";
+          command = "noctalia-greeter-session -- --session niri";
           user = "greeter";
         };
       };
