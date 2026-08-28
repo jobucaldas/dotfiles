@@ -218,6 +218,11 @@
         kdePackages.qt6ct
         kdePackages.qtstyleplugin-kvantum
         kdePackages.breeze
+
+        ## Theme sync: gsettings/dconf are required by Noctalia's GTK template
+        ## to set color-scheme/gtk-theme (libadwaita dark mode + GTK3 apps)
+        glib
+        dconf
       ];
 
       etc."xdg/quickshell/shell.qml".text = ''

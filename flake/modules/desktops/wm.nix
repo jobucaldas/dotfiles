@@ -63,11 +63,27 @@
   # };
 
   environment = {
+    sessionVariables = {
+      # Let Qt apps load the qt5ct/qt6ct platform theme (Noctalia palette lives there).
+      # NOTE: the variable is QT_QPA_PLATFORMTHEME — no underscore before THEME.
+      # "QT_QPA_PLATFORM_THEME" is not read by Qt at all.
+      QT_QPA_PLATFORMTHEME = "qt6ct;qt5ct";
+    };
+
     systemPackages = with pkgs; [
       # Apps
       nemo
+
+      # GTK theme referenced by Noctalia's theme sync (dconf gtk-theme).
+      # Without it GTK apps silently fall back to default light Adwaita.
+      adw-gtk3
     ];
   };
+
+  # Gives GTK/GIO apps the dconf GSettings backend (GIO_EXTRA_MODULES) and
+  # starts the dconf D-Bus service. Without it apps fall back to the keyfile
+  # backend and never see Noctalia's gtk-theme/color-scheme settings.
+  programs.dconf.enable = true;
 
   services = {
     greetd = {
