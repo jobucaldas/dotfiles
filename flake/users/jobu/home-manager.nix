@@ -24,6 +24,11 @@ in
         source = outOfStore "zsh/.oh-my-zsh/custom";
         recursive = true;
       };
+
+      # Noctalia stores its config in XDG_STATE_HOME (settings.toml only;
+      # runtime data like clipboard/notification history stays unmanaged).
+      ".local/state/noctalia/settings.toml".source =
+        outOfStore "noctalia/.local/state/noctalia/settings.toml";
     };
 
     pointerCursor = {
