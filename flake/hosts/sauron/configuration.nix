@@ -29,6 +29,16 @@
 
   networking.hostName = "sauron"; # Define your hostname.
 
+  networking.interfaces.enp6s0.wakeOnLan = {
+    enable = true;
+    policy = [ "magic" ];
+  };
+
+  # Keep ethtool available for checking the NIC's WOL state.
+  environment.systemPackages = with pkgs; [
+    ethtool
+  ];
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
