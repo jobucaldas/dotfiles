@@ -3,10 +3,10 @@ config_version = 13
 [bar.default]
 center = [ "notifications", "clock", "caffeine" ]
 concave_edge_corners = false
-end = [ "tray", "clipboard", "status", "network", "bluetooth", "volume", "battery", "widget", "control-center" ]
+end = [ "tray", "clipboard", "status", "network", "bluetooth", "volume", "battery", "group:g1", "widget", "control-center" ]
 margin_edge = 4
 margin_ends = 4
-start = [ "workspaces", "group:g1", "weather", "audio_visualizer" ]
+start = [ "workspaces", "weather", "media", "audio_visualizer" ]
 thickness = 40
 
     [[bar.default.capsule_group]]
@@ -233,6 +233,10 @@ glyph = "adjustments-horizontal"
 
 [widget.cpu]
 interactive = false
+
+[widget.media]
+hide_artist = true
+hide_when_no_media = true
 
 [widget.network]
 show_label = false
