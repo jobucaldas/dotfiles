@@ -27,6 +27,8 @@
     secureboot.enable = true;
   };
 
+  nixrepo.gamescope.rx570.enable = true;
+
   networking.hostName = "sauron"; # Define your hostname.
 
   networking.interfaces.enp6s0.wakeOnLan = {

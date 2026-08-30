@@ -69,6 +69,12 @@
         ];
       };
 
+      webApps.entries.tsukihime = {
+        name = "Tsukihime";
+        url = "https://tsukiweb.holofield.fr/";
+        categories = [ "Game" ];
+      };
+
       environment = {
         sessionVariables = {
           STEAM_EXTRA_COMPAT_TOOLS_PATHS = "\${HOME}/.steam/root/compatibilitytools.d";
@@ -78,6 +84,7 @@
           ## Apps
           protonplus
           moonlight-qt
+          unofficial-homestuck-collection
           (heroic.override {
             extraPkgs =
               pkgs': with pkgs'; [

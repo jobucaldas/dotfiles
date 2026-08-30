@@ -8,6 +8,11 @@
 
     nix-flatpak.url = "github:gmodena/nix-flatpak/?ref=latest";
 
+    nixrepo = {
+      url = "github:jobucaldas/nixrepo";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -19,8 +24,6 @@
     };
 
     llm-agents.url = "github:numtide/llm-agents.nix";
-
-    helium.url = "github:AlvaroParker/helium-nix";
 
     jovian-nixos = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
@@ -51,8 +54,8 @@
       deploy-rs,
       home-manager,
       nix-flatpak,
+      nixrepo,
       jovian-nixos,
-      helium,
       mangowm,
       noctalia,
       noctalia-greeter,

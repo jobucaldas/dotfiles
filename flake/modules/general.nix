@@ -5,14 +5,14 @@
   lib,
   ...
 }:
-
 {
   imports = [
-    inputs.nix-flatpak.nixosModules.nix-flatpak
+    inputs.nixrepo.nixosModules.default
 
     ./bootloader.nix
     ../users/deploy/user.nix
 
+    ./apps/general.nix
     ./apps/coding.nix
     ./apps/gaming.nix
   ];
@@ -40,6 +40,8 @@
 
   config = {
     nixpkgs = {
+      overlays = [ inputs.nixrepo.overlays.default ];
+
       # Allow unfree packages
       config.allowUnfree = true;
     };
@@ -199,14 +201,8 @@
         python3
 
         ## Apps
-        anki
-        kodi
         kitty
         kitty.terminfo
-        filezilla
-        spotify
-        vesktop
-        inputs.helium.packages.${stdenv.hostPlatform.system}.default
 
         ## Desktop
         mako
@@ -357,15 +353,6 @@
           ln -s ${pkgs.systemd}/bin/systemctl $out/systemctl
           ln -s ${pkgs.python3}/bin/python3 $out/python3
         '';
-      };
-
-      flatpak = {
-        enable = true;
-
-        packages = [
-          "it.mijorus.gearlever"
-          "rocks.shy.VacuumTube"
-        ];
       };
 
       tailscale = {
