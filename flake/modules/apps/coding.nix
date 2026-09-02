@@ -23,6 +23,7 @@
 
     environment.systemPackages = with pkgs; [
       ## CLI
+      herdr
       bws
       awscli
       kubectl
