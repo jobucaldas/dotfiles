@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - main
+  workflow_run:
+    workflows: ["Nix Flake Update"]
+    types:
+      - completed
 
 jobs:
   validate:
