@@ -32,6 +32,17 @@
       podman-compose
       pre-commit
 
+      ## Sec
+      trivy
+      checkov
+
+      ## Linters
+      statix
+      tflint
+      hadolint
+      actionlint
+      kube-linter
+
       ## Apps
       vscode
 
@@ -46,7 +57,6 @@
       # Nix
       nil
       nixfmt
-      statix
     ];
   };
 }
