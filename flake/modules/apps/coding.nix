@@ -34,7 +34,6 @@
 
       ## Sec
       trivy
-      checkov
 
       ## Linters
       statix
