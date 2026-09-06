@@ -25,6 +25,7 @@ sidebar = "none"
 sidebar_section = "none"
 
 [desktop_widgets]
+enabled = false
 schema_version = 2
 widget_order = [ "desktop-widget-0000000000000001", "desktop-widget-0000000000000002" ]
 
