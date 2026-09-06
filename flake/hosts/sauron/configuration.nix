@@ -29,6 +29,12 @@
 
   nixrepo.gamescope.rx570.enable = true;
 
+  # NixOS exposes the enabled font directory under /run/current-system/sw
+  # point it to usr/share/fonts for compatibility
+  systemd.tmpfiles.rules = [
+    "L+ /usr/share/fonts - - - - /run/current-system/sw/share/X11/fonts"
+  ];
+
   networking.hostName = "sauron"; # Define your hostname.
 
   networking.interfaces.enp6s0.wakeOnLan = {
