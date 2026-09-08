@@ -46,6 +46,7 @@
       vscode
 
       ## Languages
+      go
       gcc
       bun
       cargo
