@@ -5,67 +5,13 @@ on:
     branches:
       - main
 
-  pull_request:
-    branches:
-      - main
+concurrency:
+  group: deploy-nix-hosts
+  cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Validate Nix Flake
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Format Nix Flake
-        working-directory: ./flake
-        run: nix fmt
-
-      - name: Validate Nix Flake
-        working-directory: ./flake
-        run: nix flake check
-
-  build:
-    name: Build Nix Flake
-    runs-on: ubuntu-latest
-    needs: validate
-    strategy:
-      fail-fast: false
-      matrix:
-        deploy_host: [encom, sauron]
-    steps:
-      - uses: actions/checkout@v7
-
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v17
-        with:
-          name: jobucaldas
-          authToken: ${{ secrets.CACHIX_TOKEN }}
-
-      - name: Build Nix Flake
-        working-directory: ./flake
-        run: nix build .#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel -o result
-
-      - name: Vulnix Check
-        working-directory: ./flake
-        run: nix run nixpkgs#vulnix -- --json result | tee vulnix.json
-
-      - name: Upload Vulnix Report
-        uses: actions/upload-artifact@v7
-        with:
-          name: vulnix-report
-          path: vulnix.json
-
   deploy:
     name: Deploy Nix Hosts
-    needs: build
     permissions:
       id-token: write
     runs-on: ubuntu-latest
