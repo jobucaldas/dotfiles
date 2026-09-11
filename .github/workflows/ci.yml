@@ -3,6 +3,8 @@ name: CI Nix Flake
 on:
   pull_request:
 
+  workflow_call:
+
 jobs:
   validate:
     name: Validate Nix Flake
