@@ -5,3 +5,7 @@
 *.p12
 *.key
 *.kdbx
+
+result
+result-*
+.direnv/
