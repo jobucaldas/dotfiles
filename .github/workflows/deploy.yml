@@ -48,7 +48,7 @@ jobs:
           mkdir -p ~/.ssh
 
           cat > ~/.ssh/config <<'EOF'
-          Host *.tailbe71e1.ts.net
+          Host sauron encom *.tailbe71e1.ts.net
             StrictHostKeyChecking accept-new
           EOF
 
@@ -57,16 +57,14 @@ jobs:
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
-          # Stage the new generation in the bootloader without live-switching:
-          # - deploy-rs can't build on runners right now (its cargo vendor
-          #   sources 403 on static.crates.io from GitHub IPs, and the outputs
-          #   are no longer in any binary cache).
-          # - a live `switch` would restart sshd/tailscaled mid-activation and
-          #   drop the very SSH connection the deploy runs over.
-          # `boot` touches neither, so the deploy reports green; hosts pick up
-          # the new generation on their next reboot.
-          # nixpkgs resolves via the flake's own inputs, so it always matches
-          # the system being deployed.
-          nix run --inputs-from . nixpkgs#nixos-rebuild -- \
-            boot --target-host deploy@${{ matrix.deploy_host }}.tailbe71e1.ts.net \
-            --sudo --flake .#${{ matrix.deploy_host }}
+          # --boot only stages the new generation in the bootloader without
+          # live-switching: a live `switch` restarts sshd/tailscaled
+          # mid-activation and drops the very SSH connection the deploy runs
+          # over. Hosts pick up the new generation on their next reboot.
+          # The deploy-rs CLI itself is pinned to a nixpkgs rev whose binary
+          # substitutes cleanly (proven); rolling nixos-unstable currently
+          # forces a from-source build whose cargo vendor download 403s on
+          # static.crates.io from GitHub runner IPs.
+          # TODO: unpin once crates.io stops 403ing runner IPs.
+          nix run github:NixOS/nixpkgs/efe6f071ede9d21c37462d2d6682d5e670099684#deploy-rs -- \
+            --boot .#${{ matrix.deploy_host }}

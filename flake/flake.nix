@@ -102,18 +102,26 @@
 
       deploy.nodes = {
         encom = {
-          hostname = "encom.tailbe71e1.ts.net";
+          hostname = "encom";
           profiles.system = {
             user = "root";
             sshUser = "deploy";
+            # Build the profile on the target itself: GitHub runners get
+            # HTTP 403 from static.crates.io, so the activate-rs cargo vendor
+            # sources can't be fetched there. The hosts can reach crates.io.
+            remoteBuild = true;
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
           };
         };
         sauron = {
-          hostname = "sauron.tailbe71e1.ts.net";
+          hostname = "sauron";
           profiles.system = {
             user = "root";
             sshUser = "deploy";
+            # Build the profile on the target itself: GitHub runners get
+            # HTTP 403 from static.crates.io, so the activate-rs cargo vendor
+            # sources can't be fetched there. The hosts can reach crates.io.
+            remoteBuild = true;
             path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
           };
         };
