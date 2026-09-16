@@ -57,5 +57,8 @@ jobs:
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
-          nix run nixpkgs#deploy-rs -- \
+          # Use the flake's locked nixpkgs for deploy-rs: the rolling
+          # nixos-unstable channel can ship a deploy-rs whose cargo vendor
+          # sources are uncached/unfetchable (crates.io 403), breaking deploys.
+          nix run --inputs-from . nixpkgs#deploy-rs -- \
             .#${{ matrix.deploy_host }}
