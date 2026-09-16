@@ -16,6 +16,11 @@ jobs:
   deploy:
     name: Deploy Nix Hosts
     needs: ci
+    # Gated on the `prod` environment: nothing touches the hosts until the
+    # deploy is manually approved (repo Settings -> Environments -> prod).
+    # Approval only stages the new generation in the bootloader (`--boot`);
+    # hosts run it after their next explicit reboot.
+    environment: prod
     permissions:
       id-token: write
     runs-on: ubuntu-latest
