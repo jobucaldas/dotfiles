@@ -65,13 +65,12 @@
         settings = {
           globalOptions = {
             Behavior.ShareInputState = "All";
-            "Hotkey/TriggerKeys" = { };
-            "Hotkey/EnumerateGroupForwardKeys" = {
+
+            "Hotkey/TriggerKeys" = {
               "0" = "Control+space";
             };
-            "Hotkey/EnumerateGroupBackwardKeys" = {
-              "0" = "Control+Shift+space";
-            };
+            "Hotkey/EnumerateGroupForwardKeys" = { };
+            "Hotkey/EnumerateGroupBackwardKeys" = { };
           };
 
           inputMethod = {
@@ -84,31 +83,17 @@
               Name = "keyboard-br-thinkpad";
               Layout = "";
             };
-
-            "Groups/1" = {
-              Name = "External";
-              "Default Layout" = "br";
-              DefaultIM = "keyboard-br";
-            };
-            "Groups/1/Items/0" = {
+            "Groups/0/Items/1" = {
               Name = "keyboard-br";
               Layout = "";
             };
-
-            "Groups/2" = {
-              Name = "Japanese";
-              "Default Layout" = "br-thinkpad";
-              DefaultIM = "mozc";
-            };
-            "Groups/2/Items/0" = {
+            "Groups/0/Items/2" = {
               Name = "mozc";
               Layout = "";
             };
 
             GroupOrder = {
               "0" = "Default";
-              "1" = "External";
-              "2" = "Japanese";
             };
           };
         };
