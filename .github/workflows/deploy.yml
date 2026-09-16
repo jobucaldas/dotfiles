@@ -57,8 +57,10 @@ jobs:
       - name: Deploy Nix Host ${{ matrix.deploy_host }}
         working-directory: ./flake
         run: |
-          # Use the flake's locked nixpkgs for deploy-rs: the rolling
-          # nixos-unstable channel can ship a deploy-rs whose cargo vendor
-          # sources are uncached/unfetchable (crates.io 403), breaking deploys.
-          nix run --inputs-from . nixpkgs#deploy-rs -- \
+          # deploy-rs is pinned to a nixpkgs rev whose binary is already in
+          # cache.nixos.org + jobucaldas.cachix.org. Rolling nixos-unstable
+          # currently forces a from-source build whose cargo vendor download
+          # 403s on static.crates.io from GitHub runners.
+          # TODO: unpin once crates.io stops 403ing runner IPs.
+          nix run github:NixOS/nixpkgs/efe6f071ede9d21c37462d2d6682d5e670099684#deploy-rs -- \
             .#${{ matrix.deploy_host }}
