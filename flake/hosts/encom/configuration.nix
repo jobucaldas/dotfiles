@@ -61,8 +61,66 @@
           fcitx5-mozc
           fcitx5-gtk
         ];
+
+        settings = {
+          globalOptions = {
+            Behavior.ShareInputState = "All";
+            "Hotkey/TriggerKeys" = { };
+            "Hotkey/EnumerateGroupForwardKeys" = {
+              "0" = "Control+space";
+            };
+            "Hotkey/EnumerateGroupBackwardKeys" = {
+              "0" = "Control+Shift+space";
+            };
+          };
+
+          inputMethod = {
+            "Groups/0" = {
+              Name = "Default";
+              "Default Layout" = "br-thinkpad";
+              DefaultIM = "keyboard-br-thinkpad";
+            };
+            "Groups/0/Items/0" = {
+              Name = "keyboard-br-thinkpad";
+              Layout = "";
+            };
+
+            "Groups/1" = {
+              Name = "External";
+              "Default Layout" = "br";
+              DefaultIM = "keyboard-br";
+            };
+            "Groups/1/Items/0" = {
+              Name = "keyboard-br";
+              Layout = "";
+            };
+
+            "Groups/2" = {
+              Name = "Japanese";
+              "Default Layout" = "br-thinkpad";
+              DefaultIM = "mozc";
+            };
+            "Groups/2/Items/0" = {
+              Name = "mozc";
+              Layout = "";
+            };
+
+            GroupOrder = {
+              "0" = "Default";
+              "1" = "External";
+              "2" = "Japanese";
+            };
+          };
+        };
       };
     };
+  };
+
+  environment.sessionVariables = {
+    GTK_IM_MODULE = "fcitx";
+    QT_IM_MODULE = "fcitx";
+    SDL_IM_MODULE = "fcitx";
+    GLFW_IM_MODULE = "ibus";
   };
 
   # Configure console keymap
@@ -71,8 +129,8 @@
   services.xserver = {
     # Configure keymap in X11
     xkb = {
-      layout = "br,us";
-      variant = "thinkpad,intl";
+      layout = "br";
+      variant = "thinkpad";
     };
   };
 
