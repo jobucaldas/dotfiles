@@ -13,22 +13,8 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
-  # Manual approval gate. This job does nothing but pause on the `prod`
-  # environment (required reviewers) BEFORE anything touches the hosts.
-  # It must stay free of Tailscale/OIDC steps: referencing an environment
-  # changes the OIDC JWT claims and Tailscale's trust rejects the exchange.
-  approve:
-    name: Approve prod deploy
-    needs: ci
-    environment: prod
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "prod deploy approved"
-
-  # Phase 1 (automatic): build the system closure and pre-push it to the
-  # target's store. Changes NOTHING on the host (no bootloader, no switch).
-  stage:
-    name: Stage Nix closure
+  push:
+    name: Push Nix closure
     needs: ci
     permissions:
       id-token: write
@@ -68,107 +54,104 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-      - name: Build and pre-push system closure
-        working-directory: ./flake
-        run: |
-          TOPLEVEL=$(nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link)
-          echo "toplevel=$TOPLEVEL"
-          nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$TOPLEVEL"
-          echo "$TOPLEVEL" > "/tmp/toplevel-${{ matrix.deploy_host }}"
-
-      - name: Upload toplevel path
-        uses: actions/upload-artifact@v7
-        with:
-          name: toplevel-${{ matrix.deploy_host }}
-          path: /tmp/toplevel-${{ matrix.deploy_host }}
-          retention-days: 1
-
-  # Phase 2 (manual approval only): switch the running generation.
-  # Runs detached via systemd-run because the switch restarts sshd/tailscaled
-  # and drops the SSH connection it runs over; a poll loop then verifies
-  # /run/current-system converged instead of trusting the dead connection.
-  activate:
-    name: Activate Nix generation
-    needs:
-      - ci
-      - stage
-      - approve
-    # NOTE: do NOT attach `environment: prod` here — the environment claim
-    # in the OIDC token breaks the Tailscale JWT exchange (403). Approval
-    # is enforced by the `approve` job above; this job only runs after it.
-    permissions:
-      id-token: write
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        deploy_host: [encom, sauron]
-    steps:
-      - name: Tailscale OIDC
-        uses: tailscale/github-action@v4
-        with:
-          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
-          audience: ${{ secrets.TS_AUDIENCE }}
-          tags: tag:gha
-
-      - uses: actions/checkout@v7
-
-      - uses: cachix/install-nix-action@v31
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-
-      - name: Setup Cachix
-        uses: cachix/cachix-action@v17
-        with:
-          name: jobucaldas
-          authToken: ${{ secrets.CACHIX_TOKEN }}
-
-      - name: Configure SSH
-        run: |
-          mkdir -p ~/.ssh
-
-          cat > ~/.ssh/config <<'EOF'
-          Host sauron encom *.tailbe71e1.ts.net
-            StrictHostKeyChecking accept-new
-          EOF
-
-          chmod 600 ~/.ssh/config
-
-      - name: Download toplevel path
+      - name: Download build path
         uses: actions/download-artifact@v7
         with:
-          name: toplevel-${{ matrix.deploy_host }}
-          path: /tmp/artifacts
+          name: build-${{ matrix.deploy_host }}
+          path: flake
 
-      - name: Switch running generation
+      - name: Push system closure
         working-directory: ./flake
         run: |
-          set -euo pipefail
-          HOST="${{ matrix.deploy_host }}"
-          TOPLEVEL="$(cat "/tmp/artifacts/toplevel-${HOST}")"
-          echo "expected: $TOPLEVEL"
+          BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+          nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null
+          nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$BUILD"
 
-          # Belt and braces: stage should have pre-pushed this already.
-          if ! ssh "deploy@${HOST}" "nix path-info '${TOPLEVEL}' >/dev/null 2>&1"; then
-            echo "closure missing on host, building and pushing..."
-            BUILT=$(nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" --print-out-paths --no-link)
-            [ "$BUILT" = "$TOPLEVEL" ] || { echo "toplevel mismatch: $BUILT"; exit 1; }
-            nix copy --to "ssh://deploy@${HOST}" "$TOPLEVEL"
-          fi
+  activate:
+    name: Activate Nix generation
+    needs: push
+    environment: prod
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        deploy_host: [encom, sauron]
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
 
-          # Fire-and-forget: returns before the switch restarts sshd.
-          ssh "deploy@${HOST}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${TOPLEVEL}/bin/switch-to-configuration' switch"
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
 
-          cur=""
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Download build path
+        uses: actions/download-artifact@v7
+        with:
+          name: build-${{ matrix.deploy_host }}
+
+      - name: Switch running generation
+        run: |
+          BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+          ssh "deploy@${{ matrix.deploy_host }}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
+
+  verify:
+    name: Verify Nix generation
+    needs: activate
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        deploy_host: [encom, sauron]
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Download build path
+        uses: actions/download-artifact@v7
+        with:
+          name: build-${{ matrix.deploy_host }}
+
+      - name: Check deploy status
+        run: |
+          BUILD="$(cat "build-${{ matrix.deploy_host }}")"
           for _ in $(seq 1 30); do
-            cur="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
-            if [ "$cur" = "$TOPLEVEL" ]; then
-              echo "generation in use: $cur"
+            CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
+            if [ "$CURRENT" = "$BUILD" ]; then
+              echo "SUCCESS | Generation in use: $CURRENT"
               exit 0
             fi
             sleep 20
           done
 
-          echo "activation did not converge, last log:"
-          ssh "deploy@${HOST}" 'journalctl -u nixos-manual-switch --no-pager | tail -n 60' || true
+          echo "Deployment failed for ${{ matrix.deploy_host }}"
           exit 1

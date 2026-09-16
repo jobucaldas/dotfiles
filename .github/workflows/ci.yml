@@ -49,6 +49,16 @@ jobs:
         working-directory: ./flake
         run: nix build .#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel -o result
 
+      - name: Save build path
+        run: readlink flake/result > build-${{ matrix.deploy_host }}
+
+      - name: Upload build path
+        uses: actions/upload-artifact@v7
+        with:
+          name: build-${{ matrix.deploy_host }}
+          path: build-${{ matrix.deploy_host }}
+          retention-days: 1
+
       - name: Vulnix Check
         working-directory: ./flake
         run: nix run nixpkgs#vulnix -- --json result | tee vulnix.json
