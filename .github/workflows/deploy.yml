@@ -25,10 +25,73 @@ jobs:
     steps:
       - run: echo "prod deploy approved"
 
-  deploy:
-    name: Deploy Nix Hosts
+  # Phase 1 (automatic): build the system closure and pre-push it to the
+  # target's store. Changes NOTHING on the host (no bootloader, no switch).
+  stage:
+    name: Stage Nix closure
+    needs: ci
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        deploy_host: [encom, sauron]
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: jobucaldas
+          authToken: ${{ secrets.CACHIX_TOKEN }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Build and pre-push system closure
+        working-directory: ./flake
+        run: |
+          TOPLEVEL=$(nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link)
+          echo "toplevel=$TOPLEVEL"
+          nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$TOPLEVEL"
+          echo "$TOPLEVEL" > "/tmp/toplevel-${{ matrix.deploy_host }}"
+
+      - name: Upload toplevel path
+        uses: actions/upload-artifact@v7
+        with:
+          name: toplevel-${{ matrix.deploy_host }}
+          path: /tmp/toplevel-${{ matrix.deploy_host }}
+          retention-days: 1
+
+  # Phase 2 (manual approval only): switch the running generation.
+  # Runs detached via systemd-run because the switch restarts sshd/tailscaled
+  # and drops the SSH connection it runs over; a poll loop then verifies
+  # /run/current-system converged instead of trusting the dead connection.
+  activate:
+    name: Activate Nix generation
     needs:
       - ci
+      - stage
       - approve
     # NOTE: do NOT attach `environment: prod` here — the environment claim
     # in the OIDC token breaks the Tailscale JWT exchange (403). Approval
@@ -71,17 +134,41 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-      - name: Deploy Nix Host ${{ matrix.deploy_host }}
+      - name: Download toplevel path
+        uses: actions/download-artifact@v7
+        with:
+          name: toplevel-${{ matrix.deploy_host }}
+          path: /tmp/artifacts
+
+      - name: Switch running generation
         working-directory: ./flake
         run: |
-          # --boot only stages the new generation in the bootloader without
-          # live-switching: a live `switch` restarts sshd/tailscaled
-          # mid-activation and drops the very SSH connection the deploy runs
-          # over. Hosts pick up the new generation on their next reboot.
-          # The deploy-rs CLI itself is pinned to a nixpkgs rev whose binary
-          # substitutes cleanly (proven); rolling nixos-unstable currently
-          # forces a from-source build whose cargo vendor download 403s on
-          # static.crates.io from GitHub runner IPs.
-          # TODO: unpin once crates.io stops 403ing runner IPs.
-          nix run github:NixOS/nixpkgs/efe6f071ede9d21c37462d2d6682d5e670099684#deploy-rs -- \
-            --boot .#${{ matrix.deploy_host }}
+          set -euo pipefail
+          HOST="${{ matrix.deploy_host }}"
+          TOPLEVEL="$(cat "/tmp/artifacts/toplevel-${HOST}")"
+          echo "expected: $TOPLEVEL"
+
+          # Belt and braces: stage should have pre-pushed this already.
+          if ! ssh "deploy@${HOST}" "nix path-info '${TOPLEVEL}' >/dev/null 2>&1"; then
+            echo "closure missing on host, building and pushing..."
+            BUILT=$(nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" --print-out-paths --no-link)
+            [ "$BUILT" = "$TOPLEVEL" ] || { echo "toplevel mismatch: $BUILT"; exit 1; }
+            nix copy --to "ssh://deploy@${HOST}" "$TOPLEVEL"
+          fi
+
+          # Fire-and-forget: returns before the switch restarts sshd.
+          ssh "deploy@${HOST}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${TOPLEVEL}/bin/switch-to-configuration' switch"
+
+          cur=""
+          for _ in $(seq 1 30); do
+            cur="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
+            if [ "$cur" = "$TOPLEVEL" ]; then
+              echo "generation in use: $cur"
+              exit 0
+            fi
+            sleep 20
+          done
+
+          echo "activation did not converge, last log:"
+          ssh "deploy@${HOST}" 'journalctl -u nixos-manual-switch --no-pager | tail -n 60' || true
+          exit 1
