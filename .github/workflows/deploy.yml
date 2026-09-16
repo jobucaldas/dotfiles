@@ -13,14 +13,26 @@ jobs:
   ci:
     uses: ./.github/workflows/ci.yml
 
+  # Manual approval gate. This job does nothing but pause on the `prod`
+  # environment (required reviewers) BEFORE anything touches the hosts.
+  # It must stay free of Tailscale/OIDC steps: referencing an environment
+  # changes the OIDC JWT claims and Tailscale's trust rejects the exchange.
+  approve:
+    name: Approve prod deploy
+    needs: ci
+    environment: prod
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "prod deploy approved"
+
   deploy:
     name: Deploy Nix Hosts
-    needs: ci
-    # Gated on the `prod` environment: nothing touches the hosts until the
-    # deploy is manually approved (repo Settings -> Environments -> prod).
-    # Approval only stages the new generation in the bootloader (`--boot`);
-    # hosts run it after their next explicit reboot.
-    environment: prod
+    needs:
+      - ci
+      - approve
+    # NOTE: do NOT attach `environment: prod` here — the environment claim
+    # in the OIDC token breaks the Tailscale JWT exchange (403). Approval
+    # is enforced by the `approve` job above; this job only runs after it.
     permissions:
       id-token: write
     runs-on: ubuntu-latest
