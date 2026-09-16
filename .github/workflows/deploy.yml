@@ -64,6 +64,13 @@ jobs:
         working-directory: ./flake
         run: |
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ]; then
+            echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to push."
+            exit 0
+          fi
+
           nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null
           nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$BUILD"
 
@@ -105,6 +112,13 @@ jobs:
       - name: Switch running generation
         run: |
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ]; then
+            echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to activate."
+            exit 0
+          fi
+
           ssh "deploy@${{ matrix.deploy_host }}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
 
   verify:
