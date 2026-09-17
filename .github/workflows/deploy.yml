@@ -117,10 +117,19 @@ jobs:
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
 
           CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
-          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ]; then
+          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /nix/var/nix/profiles/system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
             echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to activate."
             exit 0
           fi
+
+          # switch-to-configuration-ng does not record the system profile
+          # generation (nixos-rebuild-ng normally does this via `nix-env
+          # --set` before invoking it; deploy-rs used to do it via
+          # activate-rs --profile-name system). Without this step the
+          # bootloader keeps enumerating the previous generation and the
+          # machine reverts on reboot.
+          ssh "deploy@${{ matrix.deploy_host }}" "sudo -n nix-env -p /nix/var/nix/profiles/system --set '${BUILD}'"
 
           ssh "deploy@${{ matrix.deploy_host }}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
 
@@ -163,12 +172,13 @@ jobs:
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
           for _ in $(seq 1 30); do
             CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
-            if [ "$CURRENT" = "$BUILD" ]; then
-              echo "SUCCESS | Generation in use: $CURRENT"
+            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /nix/var/nix/profiles/system' 2>/dev/null || true)"
+            if [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
+              echo "SUCCESS | Generation live and recorded: $CURRENT"
               exit 0
             fi
             sleep 20
           done
 
-          echo "Deployment failed for ${{ matrix.deploy_host }}"
+          echo "Deployment failed for ${{ matrix.deploy_host }} (live: $CURRENT, profile: $PROFILE, want: $BUILD)"
           exit 1
