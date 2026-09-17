@@ -53,48 +53,55 @@ in
   };
 
   xdg = {
-    # Keep config editable in repository. Home Manager creates links only.
+    # Keep config editable in repository. Home Manager creates links only
     configFile = {
-      "DankMaterialShell" = {
-        source = outOfStore "dms/.config/DankMaterialShell";
-        recursive = true;
-      };
-      "git" = {
-        source = outOfStore "git/.config/git";
-        recursive = true;
-      };
-      "kitty" = {
-        source = outOfStore "kitty/.config/kitty";
-        recursive = true;
-      };
-      "mango" = {
-        source = outOfStore "mango/.config/mango";
-        recursive = true;
-      };
-      "mpv" = {
-        source = outOfStore "mpv/.config/mpv";
-        recursive = true;
-      };
-      "niri" = {
-        source = outOfStore "niri/.config/niri";
-        recursive = true;
-      };
-      "nvim" = {
-        source = outOfStore "vi/.config/nvim";
-        recursive = true;
-      };
-      "spotifyd" = {
-        source = outOfStore "spotifyd/.config/spotifyd";
-        recursive = true;
-      };
-      "spotify-player" = {
-        source = outOfStore "spotify-player/.config/spotify-player";
-        recursive = true;
-      };
-      "tmux" = {
-        source = outOfStore "tmux/.config/tmux";
-        recursive = true;
-      };
+      "DankMaterialShell/.changelog-1.5".source =
+        outOfStore "dms/.config/DankMaterialShell/.changelog-1.5";
+      "DankMaterialShell/.firstlaunch".source = outOfStore "dms/.config/DankMaterialShell/.firstlaunch";
+      "DankMaterialShell/monitors.json".source = outOfStore "dms/.config/DankMaterialShell/monitors.json";
+      "DankMaterialShell/plugin_settings.json".source =
+        outOfStore "dms/.config/DankMaterialShell/plugin_settings.json";
+      "DankMaterialShell/settings.json".source = outOfStore "dms/.config/DankMaterialShell/settings.json";
+
+      "git/config".source = outOfStore "git/.config/git/config";
+
+      "kitty/kitty.conf".source = outOfStore "kitty/.config/kitty/kitty.conf";
+      "kitty/tabs.conf".source = outOfStore "kitty/.config/kitty/tabs.conf";
+      "kitty/theme.conf".source = outOfStore "kitty/.config/kitty/theme.conf";
+
+      "mango/binds.conf".source = outOfStore "mango/.config/mango/binds.conf";
+      "mango/colors.conf".source = outOfStore "mango/.config/mango/colors.conf";
+      "mango/config.conf".source = outOfStore "mango/.config/mango/config.conf";
+      "mango/cursor.conf".source = outOfStore "mango/.config/mango/cursor.conf";
+      "mango/layout.conf".source = outOfStore "mango/.config/mango/layout.conf";
+      "mango/outputs.conf".source = outOfStore "mango/.config/mango/outputs.conf";
+      "mango/windowrules.conf".source = outOfStore "mango/.config/mango/windowrules.conf";
+
+      "mpv/mpv.conf".source = outOfStore "mpv/.config/mpv/mpv.conf";
+
+      "niri/config.kdl".source = outOfStore "niri/.config/niri/config.kdl";
+      "niri/dms/alttab.kdl".source = outOfStore "niri/.config/niri/dms/alttab.kdl";
+      "niri/dms/binds.kdl".source = outOfStore "niri/.config/niri/dms/binds.kdl";
+      "niri/dms/colors.kdl".source = outOfStore "niri/.config/niri/dms/colors.kdl";
+      "niri/dms/cursor.kdl".source = outOfStore "niri/.config/niri/dms/cursor.kdl";
+      "niri/dms/layout.kdl".source = outOfStore "niri/.config/niri/dms/layout.kdl";
+      "niri/dms/outputs.kdl".source = outOfStore "niri/.config/niri/dms/outputs.kdl";
+      "niri/dms/windowrules.kdl".source = outOfStore "niri/.config/niri/dms/windowrules.kdl";
+      "niri/dms/wpblur.kdl".source = outOfStore "niri/.config/niri/dms/wpblur.kdl";
+
+      "nvim/colors/dms.lua".source = outOfStore "vi/.config/nvim/colors/dms.lua";
+      "nvim/init.lua".source = outOfStore "vi/.config/nvim/init.lua";
+      "nvim/lazy-lock.json".source = outOfStore "vi/.config/nvim/lazy-lock.json";
+      "nvim/lazyvim.json".source = outOfStore "vi/.config/nvim/lazyvim.json";
+      "nvim/lua/lualine/themes/dms.lua".source = outOfStore "vi/.config/nvim/lua/lualine/themes/dms.lua";
+
+      "spotifyd/spotifyd.conf".source = outOfStore "spotifyd/.config/spotifyd/spotifyd.conf";
+
+      "spotify-player/app.toml".source = outOfStore "spotify-player/.config/spotify-player/app.toml";
+
+      "tmux/tmux.conf".source = outOfStore "tmux/.config/tmux/tmux.conf";
+
+      "opencode/opencode.json".source = outOfStore "opencode/.config/opencode/opencode.json";
 
       # Link only intentional Vesktop config. Runtime data stays in ~/.config/vesktop.
       "vesktop/settings.json".source = outOfStore "vesktop/.config/vesktop/settings.json";

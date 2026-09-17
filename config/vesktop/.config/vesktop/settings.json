@@ -1,0 +1,15 @@
+{
+  "appBadge": true,
+  "arRPC": true,
+  "checkUpdates": true,
+  "customTitleBar": false,
+  "disableMinSize": true,
+  "discordBranch": "canary",
+  "hardwareAcceleration": true,
+  "minimizeToTray": true,
+  "splashBackground": "#000000",
+  "splashColor": "#ffffff",
+  "splashTheming": true,
+  "staticTitle": true,
+  "tray": true
+}
