@@ -117,7 +117,9 @@ jobs:
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
 
           CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
-          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /nix/var/nix/profiles/system' 2>/dev/null || true)"
+          # NOTE: readlink -f, the profile symlink itself points at a
+          # relative system-N-link, not the store path.
+          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
           if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
             echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to activate."
             exit 0
@@ -172,7 +174,7 @@ jobs:
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
           for _ in $(seq 1 30); do
             CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
-            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /nix/var/nix/profiles/system' 2>/dev/null || true)"
+            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
             if [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
               echo "SUCCESS | Generation live and recorded: $CURRENT"
               exit 0
