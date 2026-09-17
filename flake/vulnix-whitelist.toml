@@ -1,0 +1,109 @@
+# Vulnix whitelist — false positives caused by pname-only matching.
+#
+# vulnix matches Nix `pname` against NVD products with a coarse heuristic,
+# so Haskell/Python/Go build inputs routinely match unrelated CVEs
+# (npm, Ruby, Jenkins plugins, appliances, browsers, ...).
+# Each entry below was triaged from GitHub code-scanning alerts
+# (categories vulnix-encom / vulnix-sauron).
+#
+# Syntax: https://github.com/nix-community/vulnix#whitelisting
+#   ["pname"]            — all versions
+#   ["pname-version"]    — single version
+#   cve = [...]          — only these CVEs (omit to whitelist all CVEs
+#                          currently reported for that package)
+#
+# Re-check entries periodically; remove once vulnix matching improves
+# or the package leaves the closure (`nix why-depends`).
+
+# Haskell `tar` (0.6.x) vs npm `node-tar` / GNU tar (nixpkgs: gnutar).
+["tar"]
+comment = "Haskell tar library, not node-tar (npm) nor GNU tar. Alerts 490/510 etc."
+
+# Cinnamon `nemo` file manager (6.6.4) vs NVIDIA NeMo Framework (Python).
+["nemo"]
+comment = "Cinnamon nemo, not NVIDIA NeMo Framework. Alerts 463-467."
+
+# Haskell `warp` web server (3.4.9) vs Cloudflare WARP client (Windows).
+["warp-3.4.9"]
+comment = "Haskell warp, not Cloudflare WARP. Alert 420."
+
+# Haskell `yoke` (0.8.1) vs Yoke Helm-style IaC deployer (Go, 0.19.0).
+["yoke-0.8.1"]
+comment = "Haskell yoke, not Yoke ATC. Alerts 449-450."
+
+# Haskell `Diff` (1.0.2) vs Drupal Diff module.
+["Diff"]
+comment = "Haskell Diff package, not Drupal Diff. Alert 511."
+
+# Haskell `network` (3.2.8.0) vs Fidelis Network appliance CVEs.
+["network"]
+comment = "Haskell network library, not Fidelis Network/Deception. Alerts 273-285."
+
+# Haskell `safe` (0.3.x) vs F-Secure SAFE Browser (Android/iOS).
+["safe"]
+comment = "Haskell safe library, not F-Secure SAFE Browser. Alerts 345-372."
+
+# Haskell `vault` STM (0.3.1.6) vs HashiCorp Vault (1.x).
+["vault-0.3.1.6"]
+comment = "Haskell vault STM library, not HashiCorp Vault. Alerts 390-397."
+
+# Haskell `semver` (0.4.x) vs npm `semver` (<7.5.2 ReDoS).
+["semver-0.4.0.1"]
+cve = ["CVE-2022-25883"]
+comment = "Haskell semver binding, not npm semver. Alerts 467-468."
+["semver-0.4.0.1-r1.cabal"]
+cve = ["CVE-2022-25883"]
+comment = "Haskell semver binding, not npm semver."
+
+# Haskell `curl` binding (0.4.49) vs curl/libcurl C CVEs.
+# NOTE: version-pinned so real `curl-8.x` findings still surface.
+["curl-0.4.49"]
+comment = "Haskell curl binding version, not libcurl version. Alerts 37-38."
+
+# Haskell `zlib` binding (0.7.1.1) vs C zlib / Ruby zlib gem.
+["zlib-0.7.1.1"]
+comment = "Haskell zlib binding, not C zlib nor Ruby zlib gem. Alerts 451-455."
+
+# Ruby-gem CVEs filed against C `zlib` 1.3.2 in the closure.
+["zlib-1.3.2"]
+cve = ["CVE-2026-27820"]
+comment = "CVE-2026-27820 is Ruby zlib gem (Zlib::GzipReader), not C zlib. Alert 457."
+
+# Haskell `yaml` (0.11.x) vs Go/PyYAML CVEs.
+["yaml-0.11.11.2"]
+cve = ["CVE-2022-3064", "CVE-2021-4235"]
+comment = "Haskell yaml, not Go gopkg.in/yaml nor PyYAML. Alerts 422-425."
+["yaml-0.11.11.2-r2.cabal"]
+cve = ["CVE-2022-3064", "CVE-2021-4235"]
+comment = "Haskell yaml, not Go gopkg.in/yaml nor PyYAML."
+
+# `git` (2.55.0) vs Jenkins Git Plugin CVEs.
+["git-2.55.0"]
+cve = [
+  "CVE-2022-38663",
+  "CVE-2022-36884",
+  "CVE-2022-36883",
+  "CVE-2022-36882",
+  "CVE-2022-30947",
+  "CVE-2021-21684",
+]
+comment = "Jenkins Git Plugin CVEs, not git itself. Alert 134 etc."
+
+# VSCode ShellCheck extension vs `shellcheck` binary.
+["shellcheck-0.11.0"]
+cve = ["CVE-2021-28794"]
+comment = "Unofficial VSCode extension, not shellcheck binary. Alert 470."
+["ShellCheck-0.11.0"]
+cve = ["CVE-2021-28794"]
+comment = "Unofficial VSCode extension, not shellcheck binary. Alert 2."
+
+# `memcached` server vs PHP-Memcached extension (disputed, not affecting).
+["memcached-1.6.42"]
+cve = ["CVE-2022-26635"]
+comment = "PHP-Memcached extension CVE, disputed for server. Alert 462."
+
+# Go bootstrap toolchains — build-time only, not shipped at runtime.
+["go-1.24.13-linux-amd64-bootstrap"]
+comment = "Go bootstrap compiler, build-time only."
+["go-1.24.13-linux-386-bootstrap"]
+comment = "Go bootstrap compiler, build-time only."

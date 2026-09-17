@@ -64,10 +64,12 @@ jobs:
 
       - name: Vulnix scan
         working-directory: ./flake
-        # vulnix exits 2 when findings exist; only fail on real errors
-        run: nix run nixpkgs#vulnix -- --json result > vulnix.json || [ $? -eq 2 ]
+        # vulnix exits 2 when findings exist; only fail on real errors.
+        # Whitelist filters triaged false positives (pname collisions).
+        run: nix run nixpkgs#vulnix -- -w vulnix-whitelist.toml --json result > vulnix.json || [ $? -eq 2 ]
 
       - name: Convert to SARIF
+        # Default: error only (CVSS >= 7 or known-exploited). Use --all to debug.
         run: python3 .github/scripts/vulnix_to_sarif.py flake/vulnix.json flake/vulnix.sarif
 
       - name: Upload SARIF
