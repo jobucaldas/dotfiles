@@ -1,0 +1,29 @@
+# xhisper configuration (managed in dotfiles, linked to ~/.config/xhisper/xhisperrc)
+# Backend: xhisper-whisper-cpp (whisper-cpp Vulkan engine, set via
+# nixrepo.dictation.backend). `model-device` is ignored by that backend:
+# whisper-cli picks Vulkan and falls back to CPU automatically.
+
+# Whisper model: tiny or base (this build ships both; base is recommended)
+model-name : base
+
+# Device: auto, cpu, or cuda (ignored by the whisper-cpp backend)
+model-device : auto
+
+# Language: leave empty for auto-detect, or specify code (e.g., en, es, fr)
+model-language : ""
+
+# Transcription context words for better accuracy
+transcription-prompt     : ""
+
+# Paste timing (seconds)
+non-ascii-initial-delay : 0.15
+non-ascii-default-delay : 0.025
+
+# Silence detection (dB threshold)
+silence-threshold  : -50
+silence-percentage : 95
+
+# AI post-processing via local Ollama (empty = disabled)
+post-process-model     : ""
+post-process-timeout   : 10
+post-process-mode      : auto

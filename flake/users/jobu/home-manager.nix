@@ -111,6 +111,9 @@ in
 
       "yazi/keymap.toml".source = outOfStore "yazi/.config/yazi/keymap.toml";
       "yazi/yazi.toml".source = outOfStore "yazi/.config/yazi/yazi.toml";
+
+      # Dictation (xhisper reads ~/.config/xhisper/xhisperrc).
+      "xhisper/xhisperrc".source = outOfStore "xhisper/.config/xhisper/xhisperrc";
     };
 
     terminal-exec = {
