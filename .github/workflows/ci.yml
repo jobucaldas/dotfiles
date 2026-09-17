@@ -71,7 +71,7 @@ jobs:
         run: python3 .github/scripts/vulnix_to_sarif.py flake/vulnix.json flake/vulnix.sarif
 
       - name: Upload SARIF
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: flake/vulnix.sarif
           category: vulnix-${{ matrix.deploy_host }}
