@@ -73,6 +73,10 @@
         name = "Tsukihime";
         url = "https://tsukiweb.holofield.fr/";
         categories = [ "Game" ];
+        icon = pkgs.fetchurl {
+          url = "https://tsukiweb.holofield.fr/icons/icon_256.png";
+          hash = "sha256-92SYxhn1qReMvykB1tEq24MrYSrCo/glTpKJTyTVmCk=";
+        };
       };
 
       environment = {
