@@ -12,6 +12,9 @@ concurrency:
 jobs:
   ci:
     uses: ./.github/workflows/ci.yml
+    permissions:
+      contents: read
+      security-events: write
 
   push:
     name: Push Nix closure

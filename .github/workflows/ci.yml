@@ -26,6 +26,9 @@ jobs:
 
   build:
     name: Build Nix Flake
+    permissions:
+      contents: read
+      security-events: write
     runs-on: ubuntu-latest
     needs: validate
     strategy:
@@ -59,12 +62,16 @@ jobs:
           path: build-${{ matrix.deploy_host }}
           retention-days: 1
 
-      - name: Vulnix Check
+      - name: Vulnix scan
         working-directory: ./flake
-        run: nix run nixpkgs#vulnix -- --json result | tee vulnix.json
+        # vulnix exits 2 when findings exist; only fail on real errors
+        run: nix run nixpkgs#vulnix -- --json result > vulnix.json || [ $? -eq 2 ]
 
-      - name: Upload Vulnix Report
-        uses: actions/upload-artifact@v7
+      - name: Convert to SARIF
+        run: python3 .github/scripts/vulnix_to_sarif.py flake/vulnix.json flake/vulnix.sarif
+
+      - name: Upload SARIF
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          name: vulnix-report
-          path: vulnix.json
+          sarif_file: flake/vulnix.sarif
+          category: vulnix-${{ matrix.deploy_host }}
