@@ -29,6 +29,9 @@
     secureboot.enable = true;
   };
 
+  # Offline voice dictation (xhisper UX + whisper-cpp Vulkan engine).
+  nixrepo.dictation.enable = true;
+
   networking.hostName = "encom"; # Define your hostname
 
   # Select internationalisation properties.
