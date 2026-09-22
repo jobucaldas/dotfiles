@@ -27,7 +27,6 @@
     secureboot.enable = true;
   };
 
-  nixrepo.gamescope.rx570.enable = true;
 
   # NixOS exposes the enabled font directory under /run/current-system/sw
   # point it to usr/share/fonts for compatibility
