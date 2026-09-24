@@ -6,7 +6,6 @@
   config,
   pkgs,
   inputs,
-  lib,
   ...
 }:
 
@@ -28,22 +27,11 @@
     secureboot.enable = true;
   };
 
-  # Prefer Nixpkgs Gamescope over Jovian's vendor-pinned build on Sauron.
-  nixpkgs.overlays = lib.mkAfter [
-    (
-      final: _prev:
-      let
-        gamescope = inputs.nixpkgs.legacyPackages.${final.stdenv.hostPlatform.system}.gamescope;
-      in
-      {
-        inherit gamescope;
-        gamescope-wsi = gamescope.override {
-          enableExecutable = false;
-          enableWsi = true;
-        };
-      }
-    )
-  ];
+  # Polaris needs DCC disabled for Gamescope DRM buffers.
+  systemd.user.services.gamescope-session.environment = {
+    R600_DEBUG = "nodcc";
+    RADV_DEBUG = "nodcc";
+  };
 
   # NixOS exposes the enabled font directory under /run/current-system/sw
   # point it to usr/share/fonts for compatibility
