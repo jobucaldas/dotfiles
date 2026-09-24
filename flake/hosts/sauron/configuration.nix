@@ -27,6 +27,11 @@
     secureboot.enable = true;
   };
 
+  # Polaris needs DCC disabled for Gamescope DRM buffers.
+  systemd.user.services.gamescope-session.environment = {
+    R600_DEBUG = "nodcc";
+    RADV_DEBUG = "nodcc";
+  };
 
   # NixOS exposes the enabled font directory under /run/current-system/sw
   # point it to usr/share/fonts for compatibility
