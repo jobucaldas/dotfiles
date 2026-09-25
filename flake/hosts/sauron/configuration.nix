@@ -27,6 +27,8 @@
     secureboot.enable = true;
   };
 
+  nixrepo.gamescope.rx570.enable = true;
+
   # Polaris needs DCC disabled for Gamescope DRM buffers.
   systemd.user.services.gamescope-session.environment = {
     R600_DEBUG = "nodcc";
