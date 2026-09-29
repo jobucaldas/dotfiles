@@ -23,6 +23,7 @@ lib.mkIf config.features.coding.enable {
     codex
     opencode
     copilot-cli
+    cursor-agent
 
     # Tools
     t3code
@@ -31,5 +32,6 @@ lib.mkIf config.features.coding.enable {
     # Interfaces
     chatgpt
     t3code-desktop
+    pkgs.code-cursor
   ];
 }
