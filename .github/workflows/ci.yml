@@ -66,7 +66,22 @@ jobs:
         working-directory: ./flake
         # vulnix exits 2 when findings exist; only fail on real errors.
         # Whitelist filters triaged false positives (pname collisions).
-        run: nix run nixpkgs#vulnix -- -w vulnix-whitelist.toml --json result > vulnix.json || [ $? -eq 2 ]
+        # nvd.nist.gov occasionally times out mid-download; retry that.
+        run: |
+          attempt=1
+          until nix run nixpkgs#vulnix -- -w vulnix-whitelist.toml --json result > vulnix.json; do
+            status=$?
+            if [ "$status" -eq 2 ]; then
+              exit 0
+            fi
+            if [ "$attempt" -ge 3 ]; then
+              echo "vulnix failed after ${attempt} attempts (exit ${status})"
+              exit "$status"
+            fi
+            echo "vulnix failed (attempt ${attempt}, exit ${status}); retrying in 30s"
+            attempt=$((attempt + 1))
+            sleep 30
+          done
 
       - name: Convert to SARIF
         # Default: error only (CVSS >= 7 or known-exploited). Use --all to debug.
