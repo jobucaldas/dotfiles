@@ -22,6 +22,7 @@ lib.mkIf config.features.coding.enable {
     pi
     codex
     opencode
+    claude-code
     copilot-cli
     cursor-agent
 
@@ -30,7 +31,6 @@ lib.mkIf config.features.coding.enable {
     rtk
 
     # Interfaces
-    chatgpt
     grok-bot
     t3code-desktop
     pkgs.code-cursor
