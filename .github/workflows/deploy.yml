@@ -74,8 +74,30 @@ jobs:
             exit 0
           fi
 
-          nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null
-          nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$BUILD"
+          # cache.nixos.org sometimes drops a substitute mid-download
+          # (HTTP 416 / SSL_ERROR_SYSCALL), and the copy SSH session can
+          # time out. Retry both before failing the deploy.
+          attempt=1
+          until nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null; do
+            if [ "$attempt" -ge 3 ]; then
+              echo "nix build failed after ${attempt} attempts"
+              exit 1
+            fi
+            echo "nix build failed (attempt ${attempt}); retrying in 20s"
+            attempt=$((attempt + 1))
+            sleep 20
+          done
+
+          attempt=1
+          until nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$BUILD"; do
+            if [ "$attempt" -ge 3 ]; then
+              echo "nix copy failed after ${attempt} attempts"
+              exit 1
+            fi
+            echo "nix copy failed (attempt ${attempt}); retrying in 20s"
+            attempt=$((attempt + 1))
+            sleep 20
+          done
 
   activate:
     name: Activate Nix generation
