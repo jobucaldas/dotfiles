@@ -67,18 +67,24 @@ jobs:
         working-directory: ./flake
         run: |
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+          HOST="${{ matrix.deploy_host }}"
 
-          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
+          # An asleep or offline host must not fail the other machine's deploy.
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, leaving it unchanged."
+            exit 0
+          fi
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
           if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ]; then
-            echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to push."
+            echo "SKIP | ${HOST} already on $BUILD, nothing to push."
             exit 0
           fi
 
           # cache.nixos.org sometimes drops a substitute mid-download
-          # (HTTP 416 / SSL_ERROR_SYSCALL), and the copy SSH session can
-          # time out. Retry both before failing the deploy.
+          # (HTTP 416 / SSL_ERROR_SYSCALL). Retry the realisation before copying.
           attempt=1
-          until nix build ".#nixosConfigurations.${{ matrix.deploy_host }}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null; do
+          until nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null; do
             if [ "$attempt" -ge 3 ]; then
               echo "nix build failed after ${attempt} attempts"
               exit 1
@@ -88,8 +94,9 @@ jobs:
             sleep 20
           done
 
+          export NIX_SSHOPTS="-o ConnectTimeout=20 -o ConnectionAttempts=1"
           attempt=1
-          until nix copy --to "ssh://deploy@${{ matrix.deploy_host }}" "$BUILD"; do
+          until nix copy --to "ssh://deploy@${HOST}" "$BUILD"; do
             if [ "$attempt" -ge 3 ]; then
               echo "nix copy failed after ${attempt} attempts"
               exit 1
@@ -102,6 +109,8 @@ jobs:
   activate:
     name: Activate Nix generation
     needs: push
+    # A failed push on one host must not skip activation of the other.
+    if: ${{ !cancelled() && (needs.push.result == 'success' || needs.push.result == 'failure') }}
     environment: prod
     permissions:
       id-token: write
@@ -137,13 +146,24 @@ jobs:
       - name: Switch running generation
         run: |
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+          HOST="${{ matrix.deploy_host }}"
 
-          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, leaving it unchanged."
+            exit 0
+          fi
+
+          if ! ssh -o ConnectTimeout=10 "deploy@${HOST}" "test -e '${BUILD}'"; then
+            echo "Closure ${BUILD} is not on ${HOST}; push did not complete."
+            exit 1
+          fi
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
           # NOTE: readlink -f, the profile symlink itself points at a
           # relative system-N-link, not the store path.
-          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
           if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
-            echo "SKIP | ${{ matrix.deploy_host }} already on $BUILD, nothing to activate."
+            echo "SKIP | ${HOST} already on $BUILD, nothing to activate."
             exit 0
           fi
 
@@ -153,13 +173,14 @@ jobs:
           # activate-rs --profile-name system). Without this step the
           # bootloader keeps enumerating the previous generation and the
           # machine reverts on reboot.
-          ssh "deploy@${{ matrix.deploy_host }}" "sudo -n nix-env -p /nix/var/nix/profiles/system --set '${BUILD}'"
+          ssh "deploy@${HOST}" "sudo -n nix-env -p /nix/var/nix/profiles/system --set '${BUILD}'"
 
-          ssh "deploy@${{ matrix.deploy_host }}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
+          ssh "deploy@${HOST}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
 
   verify:
     name: Verify Nix generation
     needs: activate
+    if: ${{ !cancelled() && (needs.activate.result == 'success' || needs.activate.result == 'failure') }}
     permissions:
       id-token: write
     runs-on: ubuntu-latest
@@ -194,9 +215,16 @@ jobs:
       - name: Check deploy status
         run: |
           BUILD="$(cat "build-${{ matrix.deploy_host }}")"
+          HOST="${{ matrix.deploy_host }}"
+
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, not waiting for it."
+            exit 0
+          fi
+
           for _ in $(seq 1 30); do
-            CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink /run/current-system' 2>/dev/null || true)"
-            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${{ matrix.deploy_host }}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+            CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
+            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
             if [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
               echo "SUCCESS | Generation live and recorded: $CURRENT"
               exit 0
@@ -204,5 +232,5 @@ jobs:
             sleep 20
           done
 
-          echo "Deployment failed for ${{ matrix.deploy_host }} (live: $CURRENT, profile: $PROFILE, want: $BUILD)"
+          echo "Deployment failed for ${HOST} (live: $CURRENT, profile: $PROFILE, want: $BUILD)"
           exit 1
