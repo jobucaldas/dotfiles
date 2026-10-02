@@ -4,6 +4,11 @@ on:
   pull_request:
 
   workflow_call:
+    inputs:
+      hosts:
+        description: JSON array of hosts to build
+        type: string
+        default: '["encom","sauron"]'
 
 jobs:
   validate:
@@ -34,7 +39,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        deploy_host: [encom, sauron]
+        deploy_host: ${{ fromJSON(inputs.hosts || '["encom","sauron"]') }}
     steps:
       - uses: actions/checkout@v7
 

@@ -1,0 +1,224 @@
+name: Deploy Nix Host
+
+on:
+  workflow_call:
+    inputs:
+      host:
+        description: Host to build, push and activate
+        type: string
+        required: true
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    with:
+      hosts: ${{ format('["{0}"]', inputs.host) }}
+    permissions:
+      contents: read
+      security-events: write
+
+  push:
+    name: Push Nix closure
+    needs: ci
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v17
+        with:
+          name: jobucaldas
+          authToken: ${{ secrets.CACHIX_TOKEN }}
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Download build path
+        uses: actions/download-artifact@v8
+        with:
+          name: build-${{ inputs.host }}
+          path: flake
+
+      - name: Push system closure
+        working-directory: ./flake
+        run: |
+          BUILD="$(cat "build-${{ inputs.host }}")"
+          HOST="${{ inputs.host }}"
+
+          # An asleep or offline host must not fail the other machine's deploy.
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, leaving it unchanged."
+            exit 0
+          fi
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ]; then
+            echo "SKIP | ${HOST} already on $BUILD, nothing to push."
+            exit 0
+          fi
+
+          # cache.nixos.org sometimes drops a substitute mid-download
+          # (HTTP 416 / SSL_ERROR_SYSCALL). Retry the realisation before copying.
+          attempt=1
+          until nix build ".#nixosConfigurations.${HOST}.config.system.build.toplevel" --print-out-paths --no-link > /dev/null; do
+            if [ "$attempt" -ge 3 ]; then
+              echo "nix build failed after ${attempt} attempts"
+              exit 1
+            fi
+            echo "nix build failed (attempt ${attempt}); retrying in 20s"
+            attempt=$((attempt + 1))
+            sleep 20
+          done
+
+          export NIX_SSHOPTS="-o ConnectTimeout=20 -o ConnectionAttempts=1"
+          attempt=1
+          until nix copy --to "ssh://deploy@${HOST}" "$BUILD"; do
+            if [ "$attempt" -ge 3 ]; then
+              echo "nix copy failed after ${attempt} attempts"
+              exit 1
+            fi
+            echo "nix copy failed (attempt ${attempt}); retrying in 20s"
+            attempt=$((attempt + 1))
+            sleep 20
+          done
+
+  activate:
+    name: Activate Nix generation
+    needs: push
+    if: ${{ !cancelled() && needs.push.result != 'skipped' }}
+    environment: prod
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Download build path
+        uses: actions/download-artifact@v8
+        with:
+          name: build-${{ inputs.host }}
+
+      - name: Switch running generation
+        run: |
+          BUILD="$(cat "build-${{ inputs.host }}")"
+          HOST="${{ inputs.host }}"
+
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, leaving it unchanged."
+            exit 0
+          fi
+
+          if ! ssh -o ConnectTimeout=10 "deploy@${HOST}" "test -e '${BUILD}'"; then
+            echo "Closure ${BUILD} is not on ${HOST}; push did not complete."
+            exit 1
+          fi
+
+          CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
+          # NOTE: readlink -f, the profile symlink itself points at a
+          # relative system-N-link, not the store path.
+          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
+            echo "SKIP | ${HOST} already on $BUILD, nothing to activate."
+            exit 0
+          fi
+
+          # switch-to-configuration-ng does not record the system profile
+          # generation (nixos-rebuild-ng normally does this via `nix-env
+          # --set` before invoking it; deploy-rs used to do it via
+          # activate-rs --profile-name system). Without this step the
+          # bootloader keeps enumerating the previous generation and the
+          # machine reverts on reboot.
+          ssh "deploy@${HOST}" "sudo -n nix-env -p /nix/var/nix/profiles/system --set '${BUILD}'"
+
+          ssh "deploy@${HOST}" "sudo -n systemd-run --unit=nixos-manual-switch --collect --no-block '${BUILD}/bin/switch-to-configuration' switch"
+
+  verify:
+    name: Verify Nix generation
+    needs: activate
+    if: ${{ !cancelled() && (needs.activate.result == 'success' || needs.activate.result == 'failure') }}
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Tailscale OIDC
+        uses: tailscale/github-action@v4
+        with:
+          oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
+          audience: ${{ secrets.TS_AUDIENCE }}
+          tags: tag:gha
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+
+          cat > ~/.ssh/config <<'EOF'
+          Host sauron encom *.tailbe71e1.ts.net
+            StrictHostKeyChecking accept-new
+          EOF
+
+          chmod 600 ~/.ssh/config
+
+      - name: Download build path
+        uses: actions/download-artifact@v8
+        with:
+          name: build-${{ inputs.host }}
+
+      - name: Check deploy status
+        run: |
+          BUILD="$(cat "build-${{ inputs.host }}")"
+          HOST="${{ inputs.host }}"
+
+          if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
+            echo "SKIP | ${HOST} did not accept SSH, not waiting for it."
+            exit 0
+          fi
+
+          for _ in $(seq 1 30); do
+            CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
+            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+            if [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$BUILD" ]; then
+              echo "SUCCESS | Generation live and recorded: $CURRENT"
+              exit 0
+            fi
+            sleep 20
+          done
+
+          echo "Deployment failed for ${HOST} (live: $CURRENT, profile: $PROFILE, want: $BUILD)"
+          exit 1
