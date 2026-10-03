@@ -9,17 +9,17 @@ on:
         required: true
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci.yml
+  build:
+    uses: ./.github/workflows/build-host.yml
     with:
-      hosts: ${{ format('["{0}"]', inputs.host) }}
+      host: ${{ inputs.host }}
     permissions:
       contents: read
       security-events: write
 
   push:
     name: Push Nix closure
-    needs: ci
+    needs: build
     permissions:
       id-token: write
     runs-on: ubuntu-latest

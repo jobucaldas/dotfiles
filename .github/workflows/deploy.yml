@@ -18,8 +18,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate:
+    uses: ./.github/workflows/validate.yml
+
   encom:
     name: encom
+    needs: validate
     if: ${{ github.event_name == 'push' || inputs.host == 'all' || inputs.host == 'encom' }}
     uses: ./.github/workflows/deploy-host.yml
     with:
@@ -32,6 +36,7 @@ jobs:
 
   sauron:
     name: sauron
+    needs: validate
     if: ${{ github.event_name == 'push' || inputs.host == 'all' || inputs.host == 'sauron' }}
     uses: ./.github/workflows/deploy-host.yml
     with:
