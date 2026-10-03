@@ -181,7 +181,7 @@ widget_order = [
         format = "{:%d/%m/%Y %H:%M}"
 
 [plugins]
-enabled = [ "davemhammer/tailscale", "weinguyen/opencode-companion" ]
+enabled = [ "davemhammer/tailscale", "nightwatch75/claude-cockpit", "prponkshe/mango-displays", "noctalia/bitwarden" ]
 
 [shell]
 font_family = "Monaspace Argon"
@@ -252,7 +252,7 @@ type = "davemhammer/tailscale:status"
 glyph = "volume"
 
 [widget.widget]
-type = "weinguyen/opencode-companion:widget"
+type = "nightwatch75/claude-cockpit:widget"
 
 [widget.workspaces]
 active_pill_size = 2.0

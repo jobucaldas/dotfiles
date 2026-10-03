@@ -11,7 +11,7 @@
 
 [credential "https://github.com"]
 	helper =
-	helper = !/nix/store/8q6jczz4f4llbzn3ji6cfp7z4bhny5za-gh-2.100.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/bsjdf8dh5k8sylwzgp58ip47sbpbzw5l-gh-2.101.0/bin/.gh-wrapped auth git-credential
 [credential "https://gist.github.com"]
 	helper =
-	helper = !/nix/store/8q6jczz4f4llbzn3ji6cfp7z4bhny5za-gh-2.100.0/bin/.gh-wrapped auth git-credential
+	helper = !/nix/store/bsjdf8dh5k8sylwzgp58ip47sbpbzw5l-gh-2.101.0/bin/.gh-wrapped auth git-credential

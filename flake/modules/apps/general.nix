@@ -26,5 +26,7 @@
     filezilla
     spotify
     vesktop
+    bitwarden-cli
+    bitwarden-desktop
   ];
 }
