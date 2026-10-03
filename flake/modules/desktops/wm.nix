@@ -53,6 +53,8 @@
     systemPackages = with pkgs; [
       # Apps
       nemo
+      wlr-randr
+      wl-mirror
 
       # GTK theme referenced by Noctalia's theme sync (dconf gtk-theme).
       # Without it GTK apps silently fall back to default light Adwaita.
