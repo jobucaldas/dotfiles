@@ -12,7 +12,7 @@ on:
         options: [all, encom, sauron]
         default: all
 
-# Both hosts share one run; each host chain (build, push, activate) is independent.
+# Both hosts share one run; each host deploy is independent.
 concurrency:
   group: deploy-nix-hosts-${{ github.ref }}
   cancel-in-progress: true
@@ -30,9 +30,7 @@ jobs:
       host: encom
     secrets: inherit
     permissions:
-      actions: read
       contents: read
-      security-events: write
       id-token: write
 
   sauron:
@@ -44,7 +42,5 @@ jobs:
       host: sauron
     secrets: inherit
     permissions:
-      actions: read
       contents: read
-      security-events: write
       id-token: write

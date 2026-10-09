@@ -32,22 +32,6 @@ jobs:
         working-directory: ./flake
         run: nix build .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
 
-      - name: Save build path
-        run: readlink flake/result > build-${{ inputs.host }}
-
-      - name: Save deploy profile path
-        working-directory: ./flake
-        run: nix eval --raw .#deploy.nodes.${{ inputs.host }}.profiles.system.path.outPath > ../deploy-profile-${{ inputs.host }}
-
-      - name: Upload deployment paths
-        uses: actions/upload-artifact@v7
-        with:
-          name: build-${{ inputs.host }}
-          path: |
-            build-${{ inputs.host }}
-            deploy-profile-${{ inputs.host }}
-          retention-days: 7
-
       - name: Vulnix scan
         working-directory: ./flake
         # vulnix exits 2 when findings exist; only fail on real errors.

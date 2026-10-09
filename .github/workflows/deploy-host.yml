@@ -4,64 +4,16 @@ on:
   workflow_call:
     inputs:
       host:
-        description: Host to build, push and activate
+        description: Host to deploy
         type: string
         required: true
 
 jobs:
-  reuse:
-    name: Find PR build
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-    outputs:
-      run-id: ${{ steps.find.outputs.run-id }}
-    steps:
-      - name: Find PR build with the same tree
-        id: find
-        continue-on-error: true
-        env:
-          GH_TOKEN: ${{ github.token }}
-          EVENT: ${{ github.event_name }}
-          HOST: ${{ inputs.host }}
-          REPO: ${{ github.repository }}
-          SHA: ${{ github.sha }}
-        run: |
-          [ "$EVENT" = push ] || exit 0
-
-          # A matching tree means a matching flake, so the PR's closure is this commit's closure.
-          TREE="$(gh api "repos/${REPO}/commits/${SHA}" --jq .commit.tree.sha)"
-          for HEAD in $(gh api "repos/${REPO}/commits/${SHA}/pulls" --jq '.[] | select(.merged_at != null) | .head.sha'); do
-            [ "$(gh api "repos/${REPO}/commits/${HEAD}" --jq .commit.tree.sha)" = "$TREE" ] || continue
-            for RUN in $(gh run list --repo "$REPO" --workflow ci.yml --event pull_request --commit "$HEAD" --json databaseId,conclusion --jq '.[] | select(.conclusion == "success") | .databaseId'); do
-              if [ -n "$(gh api "repos/${REPO}/actions/runs/${RUN}/artifacts?name=build-${HOST}" --jq '.artifacts[] | select(.expired | not) | .id')" ]; then
-                echo "Reusing build from run ${RUN} (PR head ${HEAD})"
-                echo "run-id=${RUN}" >> "$GITHUB_OUTPUT"
-                exit 0
-              fi
-            done
-          done
-          echo "No PR build for tree ${TREE}; building"
-
-  build:
-    needs: reuse
-    if: ${{ needs.reuse.outputs.run-id == '' }}
-    uses: ./.github/workflows/build-host.yml
-    with:
-      host: ${{ inputs.host }}
-    secrets: inherit
-    permissions:
-      contents: read
-      security-events: write
-
   activate:
     name: Deploy with deploy-rs
-    needs: [reuse, build]
-    if: ${{ !cancelled() && needs.build.result != 'failure' }}
     environment: prod
     permissions:
-      actions: read
+      contents: read
       id-token: write
     runs-on: ubuntu-latest
     steps:
@@ -95,23 +47,24 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-      - name: Download build path
-        uses: actions/download-artifact@v8
-        with:
-          name: build-${{ inputs.host }}
-          path: flake
-          run-id: ${{ needs.reuse.outputs.run-id || github.run_id }}
-          github-token: ${{ github.token }}
-
-      - name: Check host status
-        id: status
+      - name: Resolve generation paths
+        id: generation
         working-directory: ./flake
         env:
           HOST: ${{ inputs.host }}
         run: |
-          BUILD="$(cat "build-${HOST}")"
-          DEPLOY_PROFILE="$(cat "deploy-profile-${HOST}")"
+          SYSTEM="$(nix eval --raw ".#nixosConfigurations.${HOST}.config.system.build.toplevel.outPath")"
+          PROFILE="$(nix eval --raw ".#deploy.nodes.${HOST}.profiles.system.path.outPath")"
+          echo "system=${SYSTEM}" >> "$GITHUB_OUTPUT"
+          echo "profile=${PROFILE}" >> "$GITHUB_OUTPUT"
 
+      - name: Check host status
+        id: status
+        env:
+          HOST: ${{ inputs.host }}
+          SYSTEM: ${{ steps.generation.outputs.system }}
+          PROFILE: ${{ steps.generation.outputs.profile }}
+        run: |
           if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
             echo "SKIP | ${HOST} did not accept SSH, leaving it unchanged."
             echo "deploy=false" >> "$GITHUB_OUTPUT"
@@ -119,9 +72,9 @@ jobs:
           fi
 
           CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
-          PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
-          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$DEPLOY_PROFILE" ]; then
-            echo "SKIP | ${HOST} already on $BUILD, nothing to deploy."
+          CURRENT_PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+          if [ -n "$CURRENT" ] && [ "$CURRENT" = "$SYSTEM" ] && [ "$CURRENT_PROFILE" = "$PROFILE" ]; then
+            echo "SKIP | ${HOST} already on $SYSTEM, nothing to deploy."
             echo "deploy=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
@@ -147,10 +100,10 @@ jobs:
 
   verify:
     name: Verify Nix generation
-    needs: [reuse, activate]
+    needs: activate
     if: ${{ !cancelled() && (needs.activate.result == 'success' || needs.activate.result == 'failure') }}
     permissions:
-      actions: read
+      contents: read
       id-token: write
     runs-on: ubuntu-latest
     steps:
@@ -160,6 +113,12 @@ jobs:
           oauth-client-id: ${{ secrets.TS_OAUTH_CLIENT_ID }}
           audience: ${{ secrets.TS_AUDIENCE }}
           tags: tag:gha
+
+      - uses: actions/checkout@v7
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
 
       - name: Configure SSH
         run: |
@@ -172,20 +131,23 @@ jobs:
 
           chmod 600 ~/.ssh/config
 
-      - name: Download build path
-        uses: actions/download-artifact@v8
-        with:
-          name: build-${{ inputs.host }}
-          run-id: ${{ needs.reuse.outputs.run-id || github.run_id }}
-          github-token: ${{ github.token }}
+      - name: Resolve generation paths
+        id: generation
+        working-directory: ./flake
+        env:
+          HOST: ${{ inputs.host }}
+        run: |
+          SYSTEM="$(nix eval --raw ".#nixosConfigurations.${HOST}.config.system.build.toplevel.outPath")"
+          PROFILE="$(nix eval --raw ".#deploy.nodes.${HOST}.profiles.system.path.outPath")"
+          echo "system=${SYSTEM}" >> "$GITHUB_OUTPUT"
+          echo "profile=${PROFILE}" >> "$GITHUB_OUTPUT"
 
       - name: Check deploy status
         env:
           HOST: ${{ inputs.host }}
+          SYSTEM: ${{ steps.generation.outputs.system }}
+          PROFILE: ${{ steps.generation.outputs.profile }}
         run: |
-          BUILD="$(cat "build-${HOST}")"
-          DEPLOY_PROFILE="$(cat "deploy-profile-${HOST}")"
-
           if ! ssh -o ConnectTimeout=15 -o ConnectionAttempts=2 "deploy@${HOST}" true; then
             echo "SKIP | ${HOST} did not accept SSH, not waiting for it."
             exit 0
@@ -193,13 +155,13 @@ jobs:
 
           for _ in $(seq 1 30); do
             CURRENT="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink /run/current-system' 2>/dev/null || true)"
-            PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
-            if [ "$CURRENT" = "$BUILD" ] && [ "$PROFILE" = "$DEPLOY_PROFILE" ]; then
+            CURRENT_PROFILE="$(ssh -o ConnectTimeout=10 "deploy@${HOST}" 'readlink -f /nix/var/nix/profiles/system' 2>/dev/null || true)"
+            if [ "$CURRENT" = "$SYSTEM" ] && [ "$CURRENT_PROFILE" = "$PROFILE" ]; then
               echo "SUCCESS | Generation live and recorded: $CURRENT"
               exit 0
             fi
             sleep 20
           done
 
-          echo "Deployment failed for ${HOST} (live: $CURRENT, profile: $PROFILE, want: system=$BUILD profile=$DEPLOY_PROFILE)"
+          echo "Deployment failed for ${HOST} (live: $CURRENT, profile: $CURRENT_PROFILE, want: system=$SYSTEM profile=$PROFILE)"
           exit 1

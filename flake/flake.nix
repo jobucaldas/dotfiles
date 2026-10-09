@@ -118,7 +118,7 @@
       deploy = {
         user = "root";
         sshUser = "deploy";
-        remoteBuild = true;
+        remoteBuild = false;
         sshOpts = [
           "-o"
           "ConnectTimeout=20"
