@@ -90,6 +90,30 @@
     ethtool
   ];
 
+  # The additional data drives are Btrfs filesystems mounted from Disko.
+  # Grant jobu access to existing files and set inherited ACLs for new files,
+  # while leaving their current owners unchanged.
+  systemd.services.grant-jobu-data-drive-access = {
+    description = "Grant jobu access to the additional data drives";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "local-fs.target" ];
+    unitConfig.ConditionPathIsMountPoint = [
+      "/mnt/sandssd"
+      "/mnt/kingssd"
+    ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = pkgs.writeShellScript "grant-jobu-data-drive-access" ''
+        set -euo pipefail
+        for drive in /mnt/sandssd /mnt/kingssd; do
+          ${pkgs.findutils}/bin/find "$drive" -type d -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rwx,d:u:jobu:rwx {} +
+          ${pkgs.findutils}/bin/find "$drive" -type f -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rw {} +
+        done
+      '';
+    };
+  };
+
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
 
