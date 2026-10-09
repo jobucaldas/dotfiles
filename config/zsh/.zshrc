@@ -36,4 +36,18 @@ fi
 
 export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
 
+# Load the BWS token only for BWS and SecretSpec commands
+function bws() (
+  if [[ -z "${BWS_ACCESS_TOKEN:-}" && -r "$HOME/.config/bws/laptop.token" ]]; then
+    export BWS_ACCESS_TOKEN="$(< "$HOME/.config/bws/laptop.token")"
+  fi
+  command bws "$@"
+)
+function secretspec() (
+  if [[ -z "${BWS_ACCESS_TOKEN:-}" && -r "$HOME/.config/bws/laptop.token" ]]; then
+    export BWS_ACCESS_TOKEN="$(< "$HOME/.config/bws/laptop.token")"
+  fi
+  command secretspec "$@"
+)
+
 pfetch

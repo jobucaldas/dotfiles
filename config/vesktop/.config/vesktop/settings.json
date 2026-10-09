@@ -7,8 +7,8 @@
   "discordBranch": "canary",
   "hardwareAcceleration": true,
   "minimizeToTray": true,
-  "splashBackground": "#000000",
-  "splashColor": "#ffffff",
+  "splashBackground": "rgb(18, 18, 20)",
+  "splashColor": "rgb(239, 239, 241)",
   "splashTheming": true,
   "staticTitle": true,
   "tray": true

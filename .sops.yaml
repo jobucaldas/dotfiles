@@ -1,0 +1,4 @@
+creation_rules:
+  - path_regex: flake/secrets/.*\.enc\.yaml$
+    age: age12jnd4lkhzaw80yydf43prggxzqhfxvk02yyd9su346mdh2000f4q8rxypw
+    unencrypted_suffix: _unencrypted

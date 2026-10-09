@@ -11,6 +11,8 @@
 
 {
   imports = [
+    inputs.disko.nixosModules.disko
+    ./disko.nix
     ./hardware-configuration.nix
 
     ../../modules/general.nix
@@ -46,6 +48,41 @@
   networking.interfaces.enp6s0.wakeOnLan = {
     enable = true;
     policy = [ "magic" ];
+  };
+
+  # Prevent suspend
+  systemd.sleep.settings.Sleep = {
+    AllowSuspend = false;
+    AllowHibernation = false;
+    AllowHybridSleep = false;
+    AllowSuspendThenHibernate = false;
+  };
+  services.logind.settings.Login = {
+    HandleSuspendKey = "ignore";
+    HandleHibernateKey = "ignore";
+    HandleLidSwitch = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitchDocked = "ignore";
+  };
+
+  # Enable SSH recovery before root unlock
+  boot.initrd.availableKernelModules = [ "r8169" ];
+  boot.initrd.systemd = {
+    enable = true;
+    network = {
+      enable = true;
+      networks."10-lan" = {
+        matchConfig.Name = "enp6s0";
+        address = [ "192.168.15.122/24" ];
+        gateway = [ "192.168.15.1" ];
+      };
+    };
+  };
+  boot.initrd.network.ssh = {
+    enable = true;
+    port = 2222;
+    hostKeys = [ "/etc/secrets/initrd/ssh_host_ed25519_key" ];
+    authorizedKeys = config.users.users.jobu.openssh.authorizedKeys.keys;
   };
 
   # Keep ethtool available for checking the NIC's WOL state.

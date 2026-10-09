@@ -10,9 +10,11 @@
     inputs.nixrepo.nixosModules.default
 
     ./bootloader.nix
+    ./secrets.nix
     ../users/deploy/user.nix
 
     ./apps/general.nix
+    ./apps/github.nix
     ./apps/coding.nix
     ./apps/gaming.nix
   ];

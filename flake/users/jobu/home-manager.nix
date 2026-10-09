@@ -65,6 +65,8 @@ in
 
       "git/config".source = outOfStore "git/.config/git/config";
 
+      "gh/config.yml".source = outOfStore "gh/.config/gh/config.yml";
+
       "kitty/kitty.conf".source = outOfStore "kitty/.config/kitty/kitty.conf";
       "kitty/tabs.conf".source = outOfStore "kitty/.config/kitty/tabs.conf";
       "kitty/theme.conf".source = outOfStore "kitty/.config/kitty/theme.conf";
