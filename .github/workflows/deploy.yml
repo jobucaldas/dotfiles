@@ -30,6 +30,7 @@ jobs:
       host: encom
     secrets: inherit
     permissions:
+      actions: read
       contents: read
       security-events: write
       id-token: write
@@ -43,6 +44,7 @@ jobs:
       host: sauron
     secrets: inherit
     permissions:
+      actions: read
       contents: read
       security-events: write
       id-token: write

@@ -46,7 +46,7 @@ jobs:
           path: |
             build-${{ inputs.host }}
             deploy-profile-${{ inputs.host }}
-          retention-days: 1
+          retention-days: 7
 
       - name: Vulnix scan
         working-directory: ./flake
