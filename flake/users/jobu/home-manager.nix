@@ -142,13 +142,6 @@ in
     };
   };
 
-  services = {
-    tailscale-systray = {
-      enable = true;
-      theme = "dark:nobg";
-    };
-  };
-
   # Program configuration (The "Manager" Part)
   programs = {
     neovim = {
