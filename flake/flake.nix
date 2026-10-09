@@ -115,29 +115,25 @@
         };
       };
 
-      deploy.nodes = {
-        encom = {
-          hostname = "encom";
-          profiles.system = {
-            user = "root";
-            sshUser = "deploy";
-            # Build the profile on the target itself: GitHub runners get
-            # HTTP 403 from static.crates.io, so the activate-rs cargo vendor
-            # sources can't be fetched there. The hosts can reach crates.io.
-            remoteBuild = true;
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
+      deploy = {
+        user = "root";
+        sshUser = "deploy";
+        remoteBuild = true;
+        sshOpts = [
+          "-o"
+          "ConnectTimeout=20"
+          "-o"
+          "ConnectionAttempts=2"
+        ];
+        confirmTimeout = 120;
+        nodes = {
+          encom = {
+            hostname = "encom";
+            profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.encom;
           };
-        };
-        sauron = {
-          hostname = "sauron";
-          profiles.system = {
-            user = "root";
-            sshUser = "deploy";
-            # Build the profile on the target itself: GitHub runners get
-            # HTTP 403 from static.crates.io, so the activate-rs cargo vendor
-            # sources can't be fetched there. The hosts can reach crates.io.
-            remoteBuild = true;
-            path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
+          sauron = {
+            hostname = "sauron";
+            profiles.system.path = deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.sauron;
           };
         };
       };
