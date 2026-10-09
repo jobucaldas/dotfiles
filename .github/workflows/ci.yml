@@ -13,6 +13,7 @@ jobs:
     uses: ./.github/workflows/build-host.yml
     with:
       host: encom
+    secrets: inherit
     permissions:
       contents: read
       security-events: write
@@ -23,6 +24,7 @@ jobs:
     uses: ./.github/workflows/build-host.yml
     with:
       host: sauron
+    secrets: inherit
     permissions:
       contents: read
       security-events: write

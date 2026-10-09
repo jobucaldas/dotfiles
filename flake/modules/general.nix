@@ -50,6 +50,14 @@
 
     nix = {
       settings = {
+        substituters = [
+          "https://jobucaldas.cachix.org/"
+        ];
+
+        trusted-public-keys = [
+          "jobucaldas.cachix.org-1:4o9hp3maBYH6XQttsIg9KKHOGdvfa5YkUNQzbzXH3nU="
+        ];
+
         trusted-users = [
           "deploy"
         ];
