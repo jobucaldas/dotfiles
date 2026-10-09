@@ -26,42 +26,7 @@
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" = {
-    device = "/dev/disk/by-uuid/bba1c894-cc29-4baa-bf56-c4e719a3be9c";
-    fsType = "btrfs";
-  };
-
-  fileSystems."/home" = {
-    device = "/dev/disk/by-uuid/bba1c894-cc29-4baa-bf56-c4e719a3be9c";
-    fsType = "btrfs";
-    options = [ "subvol=home" ];
-  };
-
-  fileSystems."/nix" = {
-    device = "/dev/disk/by-uuid/bba1c894-cc29-4baa-bf56-c4e719a3be9c";
-    fsType = "btrfs";
-    options = [ "subvol=nix" ];
-  };
-
-  fileSystems."/boot" = {
-    device = "/dev/disk/by-uuid/C993-5528";
-    fsType = "vfat";
-    options = [
-      "fmask=0077"
-      "dmask=0077"
-    ];
-  };
-
-  fileSystems."/mnt/sandssd" = {
-    device = "/dev/disk/by-uuid/bcb1a3ad-bcdd-4d87-987a-177bc16ae607";
-    fsType = "btrfs";
-  };
-
-  fileSystems."/mnt/kingssd" = {
-    device = "/dev/disk/by-uuid/7dc21ce1-575c-47a6-8234-f3f461766fbd";
-    fsType = "btrfs";
-  };
-
+  # See the host Disko config for filesystems
   swapDevices = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";

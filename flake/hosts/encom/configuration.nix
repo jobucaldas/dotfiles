@@ -14,6 +14,8 @@
   imports = [
     # add your model from this list: https://github.com/NixOS/nixos-hardware/blob/master/flake.nix
     inputs.nixos-hardware.nixosModules.lenovo-thinkpad-e14-intel-gen2
+    inputs.disko.nixosModules.disko
+    ./disko.nix
     ./hardware-configuration.nix
 
     ../../modules/general.nix
@@ -86,6 +88,7 @@
               Name = "keyboard-br-thinkpad";
               Layout = "";
             };
+            # Keep layouts for the built-in and external ABNT2 keyboards
             "Groups/0/Items/1" = {
               Name = "keyboard-br";
               Layout = "";
@@ -111,8 +114,26 @@
     GLFW_IM_MODULE = "ibus";
   };
 
-  # Configure console keymap
-  console.keyMap = "br-abnt2";
+  environment.etc."samba/smb.conf".text = ''
+    [global]
+    workgroup = WORKGROUP
+    client min protocol = SMB2
+    client max protocol = SMB3
+  '';
+
+  hardware.printers.ensurePrinters = [
+    {
+      name = "HP_Laserjet_1022";
+      location = "Sala";
+      description = "HP LaserJet 1022";
+      deviceUri = "ipp://192.168.15.10:631/printers/HP_LaserJet_1022";
+      model = "everywhere";
+      ppdOptions.PageSize = "A4";
+    }
+  ];
+
+  # Use the ThinkPad XKB layout in the console too
+  console.useXkbConfig = true;
 
   services.xserver = {
     # Configure keymap in X11

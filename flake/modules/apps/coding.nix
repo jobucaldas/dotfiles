@@ -23,9 +23,11 @@
 
     environment.systemPackages = with pkgs; [
       ## CLI
-      gh
-      herdr
       bws
+      herdr
+      secretspec
+      sops
+      age
       awscli
       kubectl
       ansible

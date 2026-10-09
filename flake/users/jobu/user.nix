@@ -22,6 +22,11 @@
     ]
     ++ lib.optional config.features.coding.enable "podman";
     packages = with pkgs; [ ];
+
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIMeizcZzKudDYpBMWPkLQwM4+u/7pdVrvlo21g0CLCz jobu@encom"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEuygEjUj9IlwBBaidBhaW2ct4oOTL5NkOz2tFQv1yPJ jobu@encom"
+    ];
   };
 
   # Import the Home Manager module
