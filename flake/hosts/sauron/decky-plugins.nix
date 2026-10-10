@@ -16,7 +16,6 @@
     "SDH-CssLoader" = pkgs.deckyPlugins."SDH-CssLoader";
     "SDH-GameThemeMusic" = pkgs.deckyPlugins."SDH-GameThemeMusic";
     "Junk-Store" = pkgs.deckyPlugins."Junk-Store";
-    "Deck-Shelves" = pkgs.deckyPlugins."Deck-Shelves";
     "TabMaster" = pkgs.deckyPlugins."TabMaster";
     "decky-terminal" = pkgs.deckyPlugins."decky-terminal";
     "hltb-for-deck" = pkgs.deckyPlugins."hltb-for-deck-2_0_10";
