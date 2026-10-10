@@ -14,6 +14,7 @@
     inputs.disko.nixosModules.disko
     ./disko.nix
     ./hardware-configuration.nix
+    ./decky-plugins.nix
 
     ../../modules/general.nix
     # ../../modules/apps/waydroid.nix
