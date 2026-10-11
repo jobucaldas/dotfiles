@@ -20,10 +20,14 @@
     ./decky-plugins.nix
 
     ../../modules/general.nix
+    ../../modules/data-drives.nix
     ../../modules/desktops/mango.nix
 
     ../../users/jobu/user.nix
   ];
+
+  # No additional data drives on this machine.
+  dataDrives.mountpoints = [ ];
 
   features = {
     defaultDesktop = "mango";
