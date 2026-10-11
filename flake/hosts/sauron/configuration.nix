@@ -17,6 +17,7 @@
     ./decky-plugins.nix
 
     ../../modules/general.nix
+    ../../modules/data-drives.nix
     # ../../modules/apps/waydroid.nix
     ../../modules/desktops/gnome.nix
 
@@ -91,29 +92,13 @@
     ethtool
   ];
 
-  # The additional data drives are Btrfs filesystems mounted from Disko. Their
-  # contents were created under the old uid 1000, so hand ownership to jobu;
+  # The additional data drives were created under the old uid 1000, and
   # Steam/Proton need to chmod and set times on game files, which ACLs can't
-  # grant. Root-owned files (e.g. Podman storage) are left alone.
-  systemd.services.grant-jobu-data-drive-access = {
-    description = "Give jobu ownership of the additional data drives";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "local-fs.target" ];
-    unitConfig.ConditionPathIsMountPoint = [
-      "/mnt/sandssd"
-      "/mnt/kingssd"
-    ];
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = pkgs.writeShellScript "grant-jobu-data-drive-access" ''
-        set -euo pipefail
-        for drive in /mnt/sandssd /mnt/kingssd; do
-          ${pkgs.findutils}/bin/find "$drive" -xdev ! -user root ! -user jobu -exec ${pkgs.coreutils}/bin/chown -h jobu:users {} +
-        done
-      '';
-    };
-  };
+  # grant, so jobu owns their contents.
+  dataDrives.mountpoints = [
+    "/mnt/sandssd"
+    "/mnt/kingssd"
+  ];
 
   # Select internationalisation properties.
   i18n.defaultLocale = "en_US.UTF-8";
