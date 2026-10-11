@@ -93,7 +93,8 @@
 
   # The additional data drives are Btrfs filesystems mounted from Disko.
   # Grant jobu access to existing files and set inherited ACLs for new files,
-  # while leaving their current owners unchanged.
+  # while leaving their current owners unchanged. Files use rwX so executables
+  # (Proton, Steam runtimes, native games) keep their execute bit for jobu.
   systemd.services.grant-jobu-data-drive-access = {
     description = "Grant jobu access to the additional data drives";
     wantedBy = [ "multi-user.target" ];
@@ -109,7 +110,7 @@
         set -euo pipefail
         for drive in /mnt/sandssd /mnt/kingssd; do
           ${pkgs.findutils}/bin/find "$drive" -type d -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rwx,d:u:jobu:rwx {} +
-          ${pkgs.findutils}/bin/find "$drive" -type f -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rw {} +
+          ${pkgs.findutils}/bin/find "$drive" -type f -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rwX {} +
         done
       '';
     };
