@@ -91,12 +91,12 @@
     ethtool
   ];
 
-  # The additional data drives are Btrfs filesystems mounted from Disko.
-  # Grant jobu access to existing files and set inherited ACLs for new files,
-  # while leaving their current owners unchanged. Files use rwX so executables
-  # (Proton, Steam runtimes, native games) keep their execute bit for jobu.
+  # The additional data drives are Btrfs filesystems mounted from Disko. Their
+  # contents were created under the old uid 1000, so hand ownership to jobu;
+  # Steam/Proton need to chmod and set times on game files, which ACLs can't
+  # grant. Root-owned files (e.g. Podman storage) are left alone.
   systemd.services.grant-jobu-data-drive-access = {
-    description = "Grant jobu access to the additional data drives";
+    description = "Give jobu ownership of the additional data drives";
     wantedBy = [ "multi-user.target" ];
     after = [ "local-fs.target" ];
     unitConfig.ConditionPathIsMountPoint = [
@@ -109,8 +109,7 @@
       ExecStart = pkgs.writeShellScript "grant-jobu-data-drive-access" ''
         set -euo pipefail
         for drive in /mnt/sandssd /mnt/kingssd; do
-          ${pkgs.findutils}/bin/find "$drive" -type d -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rwx,d:u:jobu:rwx {} +
-          ${pkgs.findutils}/bin/find "$drive" -type f -exec ${pkgs.acl}/bin/setfacl -m u:jobu:rwX {} +
+          ${pkgs.findutils}/bin/find "$drive" -xdev ! -user root ! -user jobu -exec ${pkgs.coreutils}/bin/chown -h jobu:users {} +
         done
       '';
     };
