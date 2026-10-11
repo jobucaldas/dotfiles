@@ -177,6 +177,23 @@ in
     };
   };
 
+  # Steam only reads the per-user fontconfig, so declare CJK fallbacks here
+  # for Big Picture / gamescope (system fonts alone are ignored by its UI).
+  fonts.fontconfig.defaultFonts = {
+    sansSerif = [
+      "DejaVu Sans"
+      "Noto Sans CJK JP"
+      "Noto Sans CJK SC"
+      "Noto Sans CJK KR"
+    ];
+    serif = [
+      "DejaVu Serif"
+      "Noto Serif CJK JP"
+      "Noto Serif CJK SC"
+      "Noto Serif CJK KR"
+    ];
+  };
+
   # State Version (Do not change)
   home.stateVersion = "26.05";
 }
