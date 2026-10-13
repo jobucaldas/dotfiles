@@ -52,10 +52,12 @@
       settings = {
         substituters = [
           "https://jobucaldas.cachix.org/"
+          "https://cache.numtide.com"
         ];
 
         trusted-public-keys = [
           "jobucaldas.cachix.org-1:4o9hp3maBYH6XQttsIg9KKHOGdvfa5YkUNQzbzXH3nU="
+          "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
         ];
 
         trusted-users = [
