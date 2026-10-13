@@ -20,6 +20,7 @@ lib.mkIf config.features.coding.enable {
   environment.systemPackages = with pkgs.llm-agents; [
     # Harness
     pi
+    grok
     codex
     opencode
     claude-code
@@ -31,7 +32,7 @@ lib.mkIf config.features.coding.enable {
     rtk
 
     # Interfaces
-    grok-bot
+    cursor
     t3code-desktop
     claude-desktop
     pkgs.code-cursor
