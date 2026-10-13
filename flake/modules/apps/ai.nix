@@ -32,7 +32,6 @@ lib.mkIf config.features.coding.enable {
     rtk
 
     # Interfaces
-    cursor
     t3code-desktop
     claude-desktop
     pkgs.code-cursor
