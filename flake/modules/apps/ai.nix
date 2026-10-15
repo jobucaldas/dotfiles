@@ -33,6 +33,7 @@ lib.mkIf config.features.coding.enable {
 
     # Interfaces
     chatgpt
+    grok-bot
     t3code-desktop
     claude-desktop
     pkgs.code-cursor
