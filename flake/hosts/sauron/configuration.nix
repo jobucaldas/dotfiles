@@ -69,6 +69,9 @@
 
   # Enable SSH recovery before root unlock
   boot.initrd.availableKernelModules = [ "r8169" ];
+  # Let NetworkManager start DHCP after unlock instead of adopting the initrd's
+  # static address without any DNS servers.
+  boot.initrd.network.flushBeforeStage2 = true;
   boot.initrd.systemd = {
     enable = true;
     network = {
