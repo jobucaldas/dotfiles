@@ -126,14 +126,22 @@
     client max protocol = SMB3
   '';
 
+  # Verified: client hpcups -> SMB -> Lenovo raw queue -> USB.
+  services.printing.drivers = [ pkgs.hplipWithPlugin ];
+  hardware.printers.ensureDefaultPrinter = "HP_Laserjet_1022";
   hardware.printers.ensurePrinters = [
     {
       name = "HP_Laserjet_1022";
       location = "Sala";
       description = "HP LaserJet 1022";
-      deviceUri = "ipp://192.168.15.10:631/printers/HP_LaserJet_1022";
-      model = "everywhere";
-      ppdOptions.PageSize = "A4";
+      deviceUri = "smb://192.168.15.10/HP_LaserJet_1022";
+      model = "HP/hp-laserjet_1022-pcl3.ppd.gz";
+      ppdOptions = {
+        PageSize = "A4";
+        OutputMode = "Normal";
+        Duplex = "None";
+        "job-sheets-default" = "none,none";
+      };
     }
   ];
 
