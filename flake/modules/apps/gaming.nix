@@ -86,6 +86,7 @@
 
         systemPackages = with pkgs; [
           ## Apps
+          epic-games-launcher
           protonplus
           moonlight-qt
           unofficial-homestuck-collection
