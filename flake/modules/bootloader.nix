@@ -34,7 +34,7 @@
       limine = {
         # Bootloader
         enable = true;
-        secureBoot.enable = config.features.coding.enable;
+        secureBoot.enable = config.features.secureboot.enable;
       };
 
       efi.canTouchEfiVariables = true;
