@@ -52,6 +52,24 @@
     policy = [ "magic" ];
   };
 
+  # Take over the initrd's static connection and obtain DNS through DHCP.
+  networking.networkmanager = {
+    settings."device-sauron-lan" = {
+      match-device = "interface-name:enp6s0";
+      keep-configuration = false;
+    };
+    ensureProfiles.profiles.sauron-lan = {
+      connection = {
+        id = "sauron-lan";
+        type = "ethernet";
+        interface-name = "enp6s0";
+        autoconnect = true;
+      };
+      ipv4.method = "auto";
+      ipv6.method = "auto";
+    };
+  };
+
   # Prevent suspend
   systemd.sleep.settings.Sleep = {
     AllowSuspend = false;
