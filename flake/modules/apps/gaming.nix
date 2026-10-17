@@ -86,6 +86,7 @@
 
         systemPackages = with pkgs; [
           ## Apps
+          deadlock-mod-manager
           epic-games-launcher
           protonplus
           moonlight-qt
