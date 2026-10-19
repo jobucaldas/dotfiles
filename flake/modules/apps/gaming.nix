@@ -85,11 +85,16 @@
         };
 
         systemPackages = with pkgs; [
-          ## Apps
+          ## Emulators
+          xemu
+          pcsx2
+          xenia-canary
+
+          ## Launchers
           deadlock-mod-manager
           epic-games-launcher
-          protonplus
-          moonlight-qt
+
+          ## Games
           unofficial-homestuck-collection
           (heroic.override {
             extraPkgs =
@@ -98,6 +103,10 @@
                 gamemode
               ];
           })
+
+          ## Apps
+          protonplus
+          moonlight-qt
 
           pkgs.wl-clipboard
         ];
