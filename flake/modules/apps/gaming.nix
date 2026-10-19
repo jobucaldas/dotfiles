@@ -93,6 +93,7 @@
           ## Launchers
           deadlock-mod-manager
           epic-games-launcher
+          xodus-nexus
 
           ## Games
           unofficial-homestuck-collection

@@ -20,6 +20,7 @@
   environment.systemPackages = with pkgs; [
     crunchyroll-linux
     vacuumtube
+    prime-wine
     helium
     anki
     kodi
