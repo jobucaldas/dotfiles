@@ -11,7 +11,7 @@ on:
 jobs:
   activate:
     name: Deploy with deploy-rs
-    environment: prod
+    environment: ${{ inputs.host }}
     permissions:
       contents: read
       id-token: write
@@ -108,6 +108,7 @@ jobs:
     name: Verify Nix generation
     needs: activate
     if: ${{ !cancelled() && (needs.activate.result == 'success' || needs.activate.result == 'failure') }}
+    environment: ${{ inputs.host }}
     permissions:
       id-token: write
     runs-on: ubuntu-latest
