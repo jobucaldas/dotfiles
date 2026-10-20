@@ -21,6 +21,7 @@
     ../../modules/desktops/gnome.nix
 
     ../../users/jobu/user.nix
+    ./keyring-unlock.nix
   ];
 
   features = {
