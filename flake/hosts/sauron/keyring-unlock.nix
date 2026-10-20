@@ -1,0 +1,39 @@
+{ pkgs, ... }:
+
+let
+  # Names and Bitwarden item references only, never secret values.
+  manifest = ../../../secretspec.toml;
+in
+{
+  environment.systemPackages = with pkgs; [
+    bws
+    secretspec
+  ];
+
+  # SDDM autologin never supplies a password, so the login keyring stays locked
+  # and every app that needs it stalls. Start the Secret Service unlocked with
+  # the password from SecretSpec instead. --login reads the password from stdin,
+  # the same way PAM starts the daemon after a password login.
+  systemd.user.services.keyring-unlock = {
+    description = "Start the login keyring unlocked with the SecretSpec password";
+    wantedBy = [ "default.target" ];
+    path = [ pkgs.bws ];
+
+    script = ''
+      set -o pipefail
+      export BWS_ACCESS_TOKEN="$(< "$HOME/.config/bws/laptop.token")"
+      export SECRETSPEC_REASON="sauron login keyring unlock"
+      ${pkgs.secretspec}/bin/secretspec -f ${manifest} get SAURON_KEYRING_PASSWORD --profile default \
+        | ${pkgs.gnome-keyring}/bin/gnome-keyring-daemon --login --foreground --components=secrets -C "$XDG_RUNTIME_DIR/keyring"
+    '';
+
+    serviceConfig = {
+      Type = "simple";
+      # A fixed control directory lets gnome-keyring-daemon --unlock find this daemon.
+      RuntimeDirectory = "keyring";
+      RuntimeDirectoryMode = "0700";
+      Restart = "on-failure";
+      RestartSec = 30;
+    };
+  };
+}
