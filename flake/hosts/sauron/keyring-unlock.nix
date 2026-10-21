@@ -21,6 +21,10 @@ in
 
     script = ''
       set -o pipefail
+      # Session D-Bus activation can start a locked daemon before this unit runs.
+      # --login then exits, so stop any other daemon first.
+      ${pkgs.procps}/bin/pkill -f 'gnome-keyring-daemon --' || true
+      sleep 2
       export BWS_ACCESS_TOKEN="$(< "$HOME/.config/bws/laptop.token")"
       export SECRETSPEC_REASON="sauron login keyring unlock"
       ${pkgs.secretspec}/bin/secretspec -f ${manifest} get SAURON_KEYRING_PASSWORD --profile default \
