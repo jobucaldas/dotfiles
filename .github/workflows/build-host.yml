@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Nix Flake
         working-directory: ./flake
-        run: nix build .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
+        run: nix build --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
 
       - name: Vulnix scan
         working-directory: ./flake
