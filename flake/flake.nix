@@ -2,14 +2,21 @@
   description = "System flake";
 
   nixConfig = {
-    extra-substituters = [ "https://cache.numtide.com" ];
+    extra-substituters = [
+      "https://cache.numtide.com"
+      "https://nyx-cache.chaotic.cx/"
+    ];
     extra-trusted-public-keys = [
       "niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g="
+      "nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk="
     ];
   };
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
+
+    # Keep Nyx's own nixpkgs pin so its CachyOS kernels use the binary cache.
+    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
 
     deploy-rs = {
       url = "github:serokell/deploy-rs";
