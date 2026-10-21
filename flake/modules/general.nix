@@ -10,6 +10,7 @@
     inputs.nixrepo.nixosModules.default
 
     ./bootloader.nix
+    ./xpad-noone.nix
     ./secrets.nix
     ../users/deploy/user.nix
 
