@@ -22,8 +22,8 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
           extra_nix_config: |
-            extra-substituters = https://cache.numtide.com
-            extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g=
+            extra-substituters = https://cache.numtide.com https://nyx-cache.chaotic.cx/
+            extra-trusted-public-keys = niks3.numtide.com-1:DTx8wZduET09hRmMtKdQDxNNthLQETkc/yaX7M4qK0g= nyx-cache.chaotic.cx:dJxTrgMC3V3cFfyIiBQDQorG6k1LsqurH/srpMSq7qk=
 
       - name: Setup Cachix
         uses: cachix/cachix-action@v17
@@ -33,7 +33,7 @@ jobs:
 
       - name: Build Nix Flake
         working-directory: ./flake
-        run: nix build .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
+        run: nix build --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
 
       - name: Vulnix scan
         working-directory: ./flake

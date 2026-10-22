@@ -7,7 +7,16 @@
 }:
 
 {
+  imports = [ inputs.chaotic.nixosModules.nyx-cache ];
+
   boot = {
+    # Apply nixrepo's module fixes to Nyx's cached kernel package set.
+    kernelPackages = lib.mkDefault (
+      inputs.chaotic.legacyPackages.${pkgs.stdenv.hostPlatform.system}.linuxPackages_cachyos.extend (
+        lib.composeManyExtensions pkgs.kernelPackagesExtensions
+      )
+    );
+
     # Graphical boot splash
     plymouth = {
       enable = true;
