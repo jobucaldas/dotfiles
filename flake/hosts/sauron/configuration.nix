@@ -22,6 +22,7 @@
 
     ../../users/jobu/user.nix
     ./keyring-unlock.nix
+    ./steam-idle-suspend.nix
   ];
 
   features = {
