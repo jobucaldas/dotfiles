@@ -17,6 +17,8 @@ in
   systemd.user.services.keyring-unlock = {
     description = "Start the login keyring unlocked with the SecretSpec password";
     wantedBy = [ "default.target" ];
+    # User units start for every user; only jobu has the token and the keyring.
+    unitConfig.ConditionUser = "jobu";
     path = [ pkgs.bws ];
 
     script = ''
@@ -36,7 +38,8 @@ in
       # A fixed control directory lets gnome-keyring-daemon --unlock find this daemon.
       RuntimeDirectory = "keyring";
       RuntimeDirectoryMode = "0700";
-      Restart = "on-failure";
+      # The daemon can also exit cleanly, which would leave the keyring locked.
+      Restart = "always";
       RestartSec = 30;
     };
   };
