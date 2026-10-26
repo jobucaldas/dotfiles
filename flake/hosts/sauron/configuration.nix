@@ -91,8 +91,8 @@
   # Let NetworkManager start DHCP after unlock instead of adopting the initrd's
   # static address without any DNS servers.
   boot.initrd.network.flushBeforeStage2 = true;
+  # systemd stage 1 is the only initrd; boot.initrd.systemd.enable was removed.
   boot.initrd.systemd = {
-    enable = true;
     network = {
       enable = true;
       networks."10-lan" = {
