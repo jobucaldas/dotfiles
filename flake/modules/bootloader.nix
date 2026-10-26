@@ -30,9 +30,8 @@
       '';
     };
 
-    # Enable "Silent boot"
+    # Enable "Silent boot". systemd stage 1 has no boot.initrd.verbose.
     consoleLogLevel = 3;
-    initrd.verbose = false;
     kernelParams = [
       "quiet"
       "rd.udev.log_level=3"
