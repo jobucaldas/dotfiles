@@ -71,6 +71,9 @@
       url = "github:noctalia-dev/noctalia-greeter";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Use OpenBot's own nixpkgs pin and release packaging.
+    openbot.url = "github:nightly-labs/openbot";
   };
 
   outputs =

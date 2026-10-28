@@ -37,7 +37,17 @@ lib.mkIf config.features.coding.enable {
     grok-bot
     t3code-desktop
     claude-desktop
-    pkgs.openbot
+    # OpenBot 0.53.0's desktop entry no longer includes --no-sandbox.
+    # Keep the upstream packaging until its substitution is corrected.
+    (inputs.openbot.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+      buildCommand =
+        builtins.replaceStrings
+          [ "Exec=AppRun --no-sandbox %U" ]
+          [
+            "Exec=AppRun %U"
+          ]
+          old.buildCommand;
+    }))
     pkgs.code-cursor
   ];
 }
