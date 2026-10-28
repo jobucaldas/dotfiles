@@ -37,6 +37,7 @@ lib.mkIf config.features.coding.enable {
     grok-bot
     t3code-desktop
     claude-desktop
+    pkgs.openbot
     pkgs.code-cursor
   ];
 }
