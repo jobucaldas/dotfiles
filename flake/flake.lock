@@ -434,6 +434,22 @@
         "type": "github"
       }
     },
+    "nixpkgs_4": {
+      "locked": {
+        "lastModified": 1792506237,
+        "narHash": "sha256-Q/8KLB6jNfpaUN1HAedE/u/Et9feE/zYSsutBLKrCFk=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "5adc50831c259f87faeb09ddf930d43597197473",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixpkgs-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nixrepo": {
       "inputs": {
         "formatelf": "formatelf",
@@ -495,6 +511,24 @@
         "type": "github"
       }
     },
+    "openbot": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_4"
+      },
+      "locked": {
+        "lastModified": 1793213229,
+        "narHash": "sha256-ug0h5rupnhn4H5/iY2teLAGWVbUzCipTCefNC5QuhU8=",
+        "owner": "nightly-labs",
+        "repo": "openbot",
+        "rev": "4b6774f98ae8d16808449b9cc3d4fe4582bbdc72",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nightly-labs",
+        "repo": "openbot",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "chaotic": "chaotic",
@@ -510,6 +544,7 @@
         "nixrepo": "nixrepo",
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
+        "openbot": "openbot",
         "sops-nix": "sops-nix"
       }
     },
