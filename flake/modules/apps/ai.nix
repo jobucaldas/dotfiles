@@ -49,5 +49,6 @@ lib.mkIf config.features.coding.enable {
           old.buildCommand;
     }))
     pkgs.code-cursor
+    pkgs.openmausbot
   ];
 }
