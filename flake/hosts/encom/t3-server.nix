@@ -30,7 +30,7 @@ in
           "HOME=${home}"
           "SHELL=${lib.getExe pkgs.bash}"
         ];
-        ExecStartPre = "${lib.getExe config.services.tailscale.package} status";
+        ExecStartPre = [ "${lib.getExe config.services.tailscale.package} status" ];
         ExecStart = lib.concatStringsSep " " [
           (lib.getExe server)
           "serve --mode web --host 127.0.0.1 --port 14312"
