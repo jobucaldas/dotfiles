@@ -545,7 +545,8 @@
         "noctalia": "noctalia",
         "noctalia-greeter": "noctalia-greeter",
         "openbot": "openbot",
-        "sops-nix": "sops-nix"
+        "sops-nix": "sops-nix",
+        "t3code-release": "t3code-release"
       }
     },
     "scenefx": {
@@ -634,6 +635,19 @@
         "owner": "nix-systems",
         "repo": "default-linux",
         "type": "github"
+      }
+    },
+    "t3code-release": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1793443619,
+        "narHash": "sha256-PYCLrciSCAG23yX2SfLAsAu3wy64pvie69TunCxcJZM=",
+        "type": "tarball",
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/t3-0.1.6-linux-x64.tar.gz"
+      },
+      "original": {
+        "type": "tarball",
+        "url": "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/t3-0.1.6-linux-x64.tar.gz"
       }
     },
     "treefmt-nix": {

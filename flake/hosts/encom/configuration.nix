@@ -17,6 +17,7 @@
     inputs.disko.nixosModules.disko
     ./disko.nix
     ./hardware-configuration.nix
+    ./t3-server.nix
 
     ../../modules/general.nix
     ../../modules/data-drives.nix
