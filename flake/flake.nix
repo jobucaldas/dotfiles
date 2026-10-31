@@ -52,6 +52,11 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    t3code-release = {
+      url = "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/t3-0.1.6-linux-x64.tar.gz";
+      flake = false;
+    };
+
     jovian-nixos = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs";
