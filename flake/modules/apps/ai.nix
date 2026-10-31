@@ -50,5 +50,6 @@ lib.mkIf config.features.coding.enable {
     }))
     pkgs.code-cursor
     pkgs.openmausbot
+    inputs.ai-usagebar.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 }

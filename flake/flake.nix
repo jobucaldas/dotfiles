@@ -52,6 +52,9 @@
 
     llm-agents.url = "github:numtide/llm-agents.nix";
 
+    # Preserve upstream's package set for its Linux and Darwin builds.
+    ai-usagebar.url = "github:akitaonrails/ai-usagebar/4a98814009f470a0d78a4c1ea24e939761d2ef40";
+
     t3code-release = {
       url = "https://github.com/pingdotgg/t3code/releases/download/v0.1.6/t3-0.1.6-linux-x64.tar.gz";
       flake = false;
