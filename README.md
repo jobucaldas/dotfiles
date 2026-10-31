@@ -12,6 +12,13 @@ cd dotfiles
 sudo nixos-rebuild switch --flake ~/Projects/dotfiles/flake#encom
 ```
 
+## AI usage bar
+
+Coding-enabled hosts install `ai-usagebar` for the
+`felipeartur/ai-usagebar` Noctalia plugin. The bar replaces Claude Cockpit and
+uses the `bar_2` widget. The package keeps upstream's own nixpkgs pin and its
+test suite enabled.
+
 ## Encom T3 server
 
 Encom runs a persistent `t3-serve` user service, independently of the desktop

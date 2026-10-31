@@ -1,12 +1,24 @@
 config_version = 15
 
 [bar.default]
-center = [ "notifications", "clock", "caffeine" ]
+center = [ "workspaces" ]
 concave_edge_corners = false
-end = [ "tray", "clipboard", "status", "network", "bluetooth", "volume", "battery", "group:g1", "widget", "control-center" ]
+end = [
+    "tray",
+    "status",
+    "caffeine",
+    "weather",
+    "network",
+    "bluetooth",
+    "volume",
+    "battery",
+    "clipboard",
+    "notifications",
+    "clock"
+]
 margin_edge = 4
 margin_ends = 4
-start = [ "workspaces", "weather", "media", "audio_visualizer", "btn", "bar" ]
+start = [ "control-center", "btn", "bar", "bar_2", "group:g1", "media", "audio_visualizer" ]
 thickness = 40
 
     [[bar.default.capsule_group]]
@@ -23,6 +35,9 @@ thickness = 40
 hidden_tabs = [ "media", "audio", "monitor", "power", "network", "bluetooth", "weather", "calendar", "notifications" ]
 sidebar = "none"
 sidebar_section = "none"
+
+    [control_center.media]
+    show_visualizer = false
 
 [desktop_widgets]
 enabled = false
@@ -186,10 +201,10 @@ vault_timeout = "never"
 [plugins]
 enabled = [
     "davemhammer/tailscale",
-    "nightwatch75/claude-cockpit",
     "prponkshe/mango-displays",
     "noctalia/bitwarden",
-    "ezequiel/mango_layouts"
+    "ezequiel/mango_layouts",
+    "felipeartur/ai-usagebar"
 ]
 
 [shell]
@@ -233,9 +248,11 @@ show_when_idle = true
 [widget.bar]
 type = "prponkshe/mango-displays:bar"
 
+[widget.bar_2]
+type = "felipeartur/ai-usagebar:bar"
+
 [widget.battery]
-display_mode = "graphic"
-show_label = false
+font_weight = 300
 
 [widget.btn]
 enable_scroll = false
@@ -246,7 +263,7 @@ anchor = true
 format = "{:%d/%m/%Y %H:%M}"
 
 [widget.control-center]
-glyph = "adjustments-horizontal"
+glyph = "brand-zapier"
 
 [widget.cpu]
 interactive = false
@@ -267,11 +284,9 @@ type = "davemhammer/tailscale:status"
 [widget.volume]
 glyph = "volume"
 
-[widget.widget]
-type = "nightwatch75/claude-cockpit:widget"
-
 [widget.workspaces]
 active_pill_size = 2.0
+anchor = true
 capsule_radius = 13
 empty_color = "primary"
 occupied_color = "primary"
