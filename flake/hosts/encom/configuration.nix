@@ -18,6 +18,7 @@
     ./disko.nix
     ./hardware-configuration.nix
     ./t3-server.nix
+    ./t3-cliproxy.nix
 
     ../../modules/general.nix
     ../../modules/data-drives.nix
