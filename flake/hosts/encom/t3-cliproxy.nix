@@ -75,6 +75,24 @@ in
     # Best effort before the server starts: a proxy outage must not keep it down.
     services.t3-serve.Service.ExecStartPre = [ "-${sync} ${serverSettings}" ];
 
+    # Refresh server models periodically so newly available models appear without a restart.
+    services.t3-cliproxy-sync-server = {
+      Unit.Description = "Refresh T3 Code server models from cliproxyapi";
+      Service = {
+        Type = "oneshot";
+        ExecStart = "${sync} ${serverSettings}";
+      };
+      Install.WantedBy = [ "default.target" ];
+    };
+    timers.t3-cliproxy-sync-server = {
+      Unit.Description = "Refresh cliproxyapi models for the T3 Code server";
+      Timer = {
+        OnStartupSec = "2min";
+        OnUnitActiveSec = "6h";
+      };
+      Install.WantedBy = [ "timers.target" ];
+    };
+
     # The desktop app's own (local) instance.
     services.t3-cliproxy-sync-local = {
       Unit.Description = "Point the local T3 Code at cliproxyapi";
