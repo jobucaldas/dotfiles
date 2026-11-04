@@ -18,38 +18,48 @@ lib.mkIf config.features.coding.enable {
     })
   ];
 
-  environment.systemPackages = with pkgs.llm-agents; [
-    # Harness
-    pi
-    grok
-    codex
-    opencode
-    claude-code
-    copilot-cli
-    cursor-agent
+  environment.systemPackages =
+    with pkgs.llm-agents;
+    [
+      # Harness
+      pi
+      grok
+      codex
+      opencode
+      claude-code
+      copilot-cli
+      cursor-agent
 
-    # Tools
-    t3code
-    rtk
+      # Tools
+      t3code
+      rtk
 
-    # Interfaces
-    chatgpt
-    grok-bot
-    t3code-desktop
-    claude-desktop
-    # OpenBot 0.53.0's desktop entry no longer includes --no-sandbox.
-    # Keep the upstream packaging until its substitution is corrected.
-    (inputs.openbot.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-      buildCommand =
-        builtins.replaceStrings
-          [ "Exec=AppRun --no-sandbox %U" ]
-          [
-            "Exec=AppRun %U"
-          ]
-          old.buildCommand;
-    }))
-    pkgs.code-cursor
-    pkgs.openmausbot
-    inputs.ai-usagebar.packages.${pkgs.stdenv.hostPlatform.system}.default
-  ];
+      # Interfaces
+      chatgpt
+      grok-bot
+      t3code-desktop
+      claude-desktop
+      # OpenBot 0.53.0's desktop entry no longer includes --no-sandbox.
+      # Keep the upstream packaging until its substitution is corrected.
+      (inputs.openbot.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+        buildCommand =
+          builtins.replaceStrings
+            [ "Exec=AppRun --no-sandbox %U" ]
+            [
+              "Exec=AppRun %U"
+            ]
+            old.buildCommand;
+      }))
+      pkgs.code-cursor
+    ]
+    ++ [
+      pkgs.openmausbot
+    ]
+    ++ [
+      # Noctalia bar plugin `felipeartur/ai-usagebar` runs this by name.
+      # Skip the upstream test suite; it rebuilds the crate with LTO.
+      (inputs.ai-usagebar.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs {
+        doCheck = false;
+      })
+    ];
 }
