@@ -551,11 +551,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1793213229,
-        "narHash": "sha256-ug0h5rupnhn4H5/iY2teLAGWVbUzCipTCefNC5QuhU8=",
+        "lastModified": 1793488786,
+        "narHash": "sha256-tKqucNYJivZXP53nIIEhFchnR3qDHbsUGHcTjivhudA=",
         "owner": "nightly-labs",
         "repo": "openbot",
-        "rev": "4b6774f98ae8d16808449b9cc3d4fe4582bbdc72",
+        "rev": "39b2a95052b03a03aac9c5ec279761bc24efac3d",
         "type": "github"
       },
       "original": {
