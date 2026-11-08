@@ -6,14 +6,13 @@
 }:
 let
   home = config.users.users.jobu.home;
-  baseUrl = "http://cliproxyapi.tailbe71e1.ts.net:8317";
+  # `cliproxyapi.tailbe71e1.ts.net` is a Tailscale service VIP that stops
+  # resolving once the service is unadvertised; the same proxy answers on the
+  # TrueNAS node itself.
+  baseUrl = "https://truenas.tailbe71e1.ts.net:8317";
   # Bitwarden `cluster` project; the `cluster` machine account reads it.
   clusterProject = "cfd59b69-ae74-4692-b06c-b49101022445";
   tokenFile = "${home}/.config/bws/cluster.token";
-  # Local gateway that adds usage-limit reset times to cliproxyapi's errors;
-  # T3's Claude talks to it instead of the proxy.
-  gatewayPort = 18317;
-  gatewayUrl = "http://127.0.0.1:${toString gatewayPort}";
 
   # Points T3's Claude provider at cliproxyapi and offers every chat model the
   # proxy serves. The key lands in the instance environment of T3's
@@ -38,7 +37,7 @@ let
       mkdir -p "$(dirname "$settings")"
       [ -f "$settings" ] || echo '{}' > "$settings"
       umask 0077
-      jq --argjson m "$models" --arg key "$key" --arg url ${lib.escapeShellArg gatewayUrl} '
+      jq --argjson m "$models" --arg key "$key" --arg url ${lib.escapeShellArg baseUrl} '
         .providerInstances.claudeAgent |= (
           (. // {driver: "claudeAgent"})
           | .config = ((.config // {}) | .customModels = $m)
@@ -58,20 +57,6 @@ let
 in
 {
   home-manager.users.jobu.systemd.user = {
-    services.t3-cliproxy-gateway = {
-      Unit.Description = "Adds usage-limit reset times to cliproxyapi errors for T3 Code";
-      Service = {
-        Environment = [
-          "UPSTREAM=${baseUrl}"
-          "PORT=${toString gatewayPort}"
-        ];
-        ExecStart = "${lib.getExe pkgs.nodejs} ${./t3-cliproxy-gateway.js}";
-        Restart = "always";
-        RestartSec = "5s";
-      };
-      Install.WantedBy = [ "default.target" ];
-    };
-
     # Best effort before the server starts: a proxy outage must not keep it down.
     services.t3-serve.Service.ExecStartPre = [ "-${sync} ${serverSettings}" ];
 
