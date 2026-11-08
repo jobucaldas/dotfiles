@@ -11,6 +11,12 @@
   ];
 
   config = lib.mkIf config.features.coding.enable {
+    virtualisation.containers.policy = {
+      default = [
+        { type = "insecureAcceptAnything"; }
+      ];
+    };
+
     virtualisation.podman = {
       enable = true;
 
