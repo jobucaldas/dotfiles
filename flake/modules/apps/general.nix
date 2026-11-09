@@ -22,6 +22,7 @@
     vacuumtube
     prime-wine
     helium
+    figcraft
     anki
     kodi
     filezilla
