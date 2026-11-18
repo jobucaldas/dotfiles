@@ -84,30 +84,29 @@
       };
     };
 
-    kingssd = {
+    sea1 = {
       type = "disk";
-      device = "/dev/disk/by-id/ata-KINGSTON_SA400S37240G_50026B7784850A9E";
+      device = "/dev/disk/by-id/ata-ST1000LM049-2GH172_WGS3AFLR";
 
       content = {
         type = "gpt";
         partitions.data = {
           priority = 1;
-          name = "King SSD";
-          label = "King SSD";
-          uuid = "235f42c9-22f0-4640-901e-da720671a638";
-          start = "34s";
-          end = "468860927s";
+          name = "Sea 1";
+          label = "Sea 1";
+          start = "2048s";
+          end = "1953523711s";
           type = "8300";
           content = {
             type = "luks";
-            name = "cryptkingssd";
+            name = "cryptsea1";
             settings.crypttabExtraOpts = [
               "tpm2-device=auto"
               "tpm2-pcrs=7"
             ];
             content = {
               type = "btrfs";
-              mountpoint = "/mnt/kingssd";
+              mountpoint = "/mnt/sea1";
             };
           };
         };

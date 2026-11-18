@@ -48,6 +48,8 @@
 
   networking.hostName = "sauron"; # Define your hostname.
 
+  services.resolved.enable = true;
+
   networking.interfaces.enp6s0.wakeOnLan = {
     enable = true;
     policy = [ "magic" ];
@@ -55,6 +57,7 @@
 
   # Take over the initrd's static connection and obtain DNS through DHCP.
   networking.networkmanager = {
+    dns = "systemd-resolved";
     settings."device-sauron-lan" = {
       match-device = "interface-name:enp6s0";
       keep-configuration = false;
@@ -119,7 +122,7 @@
   # grant, so jobu owns their contents.
   dataDrives.mountpoints = [
     "/mnt/sandssd"
-    "/mnt/kingssd"
+    "/mnt/sea1"
   ];
 
   # Select internationalisation properties.
