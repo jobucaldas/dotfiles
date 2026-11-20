@@ -28,6 +28,7 @@
     filezilla
     spotify
     vesktop
+    discord
     bitwarden-cli
     bitwarden-desktop
   ];
