@@ -87,24 +87,6 @@ jobs:
 
           echo "deploy=true" >> "$GITHUB_OUTPUT"
 
-      # Build on the runner and push to Cachix so the host only substitutes
-      # instead of compiling (and filling its disk) during activation.
-      - name: Free runner disk
-        if: steps.status.outputs.deploy == 'true'
-        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
-
-      - name: Build and push to Cachix
-        if: steps.status.outputs.deploy == 'true'
-        working-directory: ./flake
-        env:
-          HOST: ${{ inputs.host }}
-          CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_TOKEN }}
-        run: |
-          nix build --keep-going --no-link --print-out-paths \
-            ".#nixosConfigurations.${HOST}.config.system.build.toplevel" \
-            ".#deploy.nodes.${HOST}.profiles.system.path" |
-            nix run nixpkgs#cachix -- push jobucaldas
-
       - name: Deploy system profile
         if: steps.status.outputs.deploy == 'true'
         working-directory: ./flake
