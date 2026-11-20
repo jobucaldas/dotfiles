@@ -42,7 +42,21 @@
 
   config = {
     nixpkgs = {
-      overlays = [ inputs.nixrepo.overlays.default ];
+      overlays = [
+        inputs.nixrepo.overlays.default
+
+        # nixpkgs d4f25a3 regressions that fail to build (and are not cached):
+        # bws links -lsqlite3 without declaring it, and deadlock-mod-manager
+        # forces a system AWS-LC that is not available.
+        (final: prev: {
+          bws = prev.bws.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or [ ]) ++ [ final.sqlite ];
+          });
+          deadlock-mod-manager = prev.deadlock-mod-manager.overrideAttrs (old: {
+            preBuild = (old.preBuild or "") + "\nunset AWS_LC_SYS_USE_SYSTEM\n";
+          });
+        })
+      ];
 
       # Allow unfree packages
       config.allowUnfree = true;
