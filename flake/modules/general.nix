@@ -406,6 +406,11 @@
     };
 
     systemd = {
+      # Deploys reach hosts over Tailscale SSH, which is a child of tailscaled.
+      # Restarting it during activation kills the deploy's own connection and
+      # triggers a rollback, so apply new versions on the next boot instead.
+      services.tailscaled.restartIfChanged = false;
+
       user.services.udiskie = {
         description = "udiskie automounter";
         wantedBy = [ "graphical-session.target" ];
