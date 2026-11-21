@@ -9,7 +9,15 @@ let
   home = config.users.users.jobu.home;
   server = pkgs.callPackage ../../packages/t3-server.nix {
     src = inputs.t3code-release;
-    providerPackages = pkgs.llm-agents.t3code.providerPackages;
+    # Same set as pkgs.llm-agents.t3code.providerPackages, but taken from the
+    # overlaid package set so the patched codex is used, not the upstream one.
+    providerPackages = with pkgs.llm-agents; [
+      codex
+      claude-code
+      cursor-agent
+      grok
+      opencode
+    ];
   };
 in
 {
