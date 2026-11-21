@@ -12,18 +12,27 @@ lib.mkIf config.features.coding.enable {
     (final: prev: {
       # Background pi-subagents need the importable npm package and its peer
       # dependencies; the default Bun binary only carries a standalone layout.
-      llm-agents = prev.llm-agents // {
-        pi = prev.llm-agents.pi.override { useBun = false; };
+      llm-agents =
+        let
+          # openssl-sys fails to find OpenSSL when built against our nixpkgs
+          # (not cached upstream either), so provide it explicitly.
+          codex = prev.llm-agents.codex.overrideAttrs (old: {
+            buildInputs = (old.buildInputs or [ ]) ++ [ final.openssl ];
+            env = (old.env or { }) // {
+              OPENSSL_NO_VENDOR = "1";
+            };
+          });
 
-        # openssl-sys fails to find OpenSSL when built against our nixpkgs
-        # (not cached upstream either), so provide it explicitly.
-        codex = prev.llm-agents.codex.overrideAttrs (old: {
-          buildInputs = (old.buildInputs or [ ]) ++ [ final.openssl ];
-          env = (old.env or { }) // {
-            OPENSSL_NO_VENDOR = "1";
-          };
-        });
-      };
+          # t3code and its desktop wrapper close over upstream's own codex, so
+          # hand them the patched one.
+          t3code = prev.llm-agents.t3code.override { inherit codex; };
+        in
+        prev.llm-agents
+        // {
+          inherit codex t3code;
+          pi = prev.llm-agents.pi.override { useBun = false; };
+          t3code-desktop = prev.llm-agents.t3code-desktop.override { inherit t3code; };
+        };
     })
   ];
 
