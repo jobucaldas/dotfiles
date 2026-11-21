@@ -62,7 +62,9 @@ jobs:
             attrs+=(".#nixosConfigurations.${host}.config.system.build.toplevel")
             attrs+=(".#deploy.nodes.${host}.profiles.system.path")
           done
-          nix build --keep-going --no-link --print-out-paths "${attrs[@]}" |
+          # One derivation at a time: parallel Rust/LTO builds starve the runner
+          # of memory and it drops off the server mid-build.
+          nix build --max-jobs 1 --cores 4 --keep-going --no-link --print-out-paths "${attrs[@]}" |
             nix run nixpkgs#cachix -- push jobucaldas
 
   encom:
