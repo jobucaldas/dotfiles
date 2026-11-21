@@ -47,6 +47,7 @@ lib.mkIf config.features.coding.enable {
       claude-code
       copilot-cli
       cursor-agent
+      antigravity-cli
 
       # Tools
       t3code
