@@ -55,6 +55,8 @@ jobs:
         env:
           CACHIX_AUTH_TOKEN: ${{ secrets.CACHIX_TOKEN }}
         run: |
+          # A failed build must fail this step instead of being masked by the pipe.
+          set -o pipefail
           attrs=()
           for host in $HOSTS; do
             attrs+=(".#nixosConfigurations.${host}.config.system.build.toplevel")
