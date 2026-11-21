@@ -14,6 +14,15 @@ lib.mkIf config.features.coding.enable {
       # dependencies; the default Bun binary only carries a standalone layout.
       llm-agents = prev.llm-agents // {
         pi = prev.llm-agents.pi.override { useBun = false; };
+
+        # openssl-sys fails to find OpenSSL when built against our nixpkgs
+        # (not cached upstream either), so provide it explicitly.
+        codex = prev.llm-agents.codex.overrideAttrs (old: {
+          buildInputs = (old.buildInputs or [ ]) ++ [ final.openssl ];
+          env = (old.env or { }) // {
+            OPENSSL_NO_VENDOR = "1";
+          };
+        });
       };
     })
   ];
