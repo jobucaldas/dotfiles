@@ -33,7 +33,9 @@ jobs:
 
       - name: Build Nix Flake
         working-directory: ./flake
-        run: nix build --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
+        # One derivation at a time: parallel Rust builds (codex, ai-usagebar)
+        # starve the runner of memory and it drops off the server mid-build.
+        run: nix build --max-jobs 1 --cores 4 --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
 
       - name: Vulnix scan
         working-directory: ./flake
