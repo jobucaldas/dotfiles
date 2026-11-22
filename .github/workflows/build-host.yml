@@ -16,6 +16,19 @@ jobs:
       security-events: write
     runs-on: ubuntu-latest
     steps:
+      - name: Free runner disk
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+
+      # Building the patched codex runs the runner out of memory, and
+      # it is killed without swap.
+      - name: Add extra swap
+        run: |
+          sudo fallocate -l 16G /extra-swapfile
+          sudo chmod 600 /extra-swapfile
+          sudo mkswap /extra-swapfile
+          sudo swapon /extra-swapfile
+          swapon --show
+
       - uses: actions/checkout@v7
 
       - uses: cachix/install-nix-action@v31
@@ -33,7 +46,12 @@ jobs:
 
       - name: Build Nix Flake
         working-directory: ./flake
-        run: nix build --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
+        # One derivation at a time: parallel Rust builds (codex, ai-usagebar)
+        # starve the runner of memory and it drops off the server mid-build.
+        run: |
+          # Log disk and memory every minute so a runner loss leaves a cause.
+          (while sleep 60; do echo "[monitor] $(df -h / | tail -1 | awk '{print $4" free"}'), $(free -m | awk 'NR==2{print $7" MB mem available"}')"; done) &
+          nix build --max-jobs 1 --cores 4 --keep-going .#nixosConfigurations.${{ inputs.host }}.config.system.build.toplevel -o result
 
       - name: Vulnix scan
         working-directory: ./flake
