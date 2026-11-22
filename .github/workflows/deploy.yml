@@ -35,6 +35,15 @@ jobs:
       - name: Free runner disk
         run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
 
+      # Building the patched codex runs the runner out of memory, and
+      # it is killed without swap.
+      - name: Add swap
+        run: |
+          sudo fallocate -l 16G /swapfile
+          sudo chmod 600 /swapfile
+          sudo mkswap /swapfile
+          sudo swapon /swapfile
+
       - uses: actions/checkout@v7
 
       - uses: cachix/install-nix-action@v31
