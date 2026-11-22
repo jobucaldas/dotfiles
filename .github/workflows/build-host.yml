@@ -21,12 +21,13 @@ jobs:
 
       # Building the patched codex runs the runner out of memory, and
       # it is killed without swap.
-      - name: Add swap
+      - name: Add extra swap
         run: |
-          sudo fallocate -l 16G /swapfile
-          sudo chmod 600 /swapfile
-          sudo mkswap /swapfile
-          sudo swapon /swapfile
+          sudo fallocate -l 16G /extra-swapfile
+          sudo chmod 600 /extra-swapfile
+          sudo mkswap /extra-swapfile
+          sudo swapon /extra-swapfile
+          swapon --show
 
       - uses: actions/checkout@v7
 
